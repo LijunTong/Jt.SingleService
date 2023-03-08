@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Jt.SingleService.Core\Jt.SingleService.Core.csproj" />
+    <ProjectReference Include="..\Jt.SingleService.Service\Jt.SingleService.Service.csproj" />
+  </ItemGroup>
+
+</Project>
