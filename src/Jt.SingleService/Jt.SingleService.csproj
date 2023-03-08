@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Jt.SingleService.Core\Jt.SingleService.Core.csproj" />
     <ProjectReference Include="..\Jt.SingleService.Service\Jt.SingleService.Service.csproj" />
   </ItemGroup>
