@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.StackExchangeRedis;
+﻿using Jt.SingleService.Core.Options;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Text.Json;

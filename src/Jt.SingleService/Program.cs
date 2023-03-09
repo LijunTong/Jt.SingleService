@@ -2,7 +2,7 @@ using Jt.SingleService;
 
 var builder = WebApplication.CreateBuilder(args);
 
-StartUp.AddServices(builder.Services);
+StartUp.AddServices(builder);
 
 var app = builder.Build();
 

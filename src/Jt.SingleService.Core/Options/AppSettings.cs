@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jt.SingleService.Core
+namespace Jt.SingleService.Core.Options
 {
     public class AppSettings
     {
         public string AppName { get; set; }
 
+        public string AppVersion { get; set; }
+       
         public RedisConfig Redis { get; set; }
 
         public class RedisConfig

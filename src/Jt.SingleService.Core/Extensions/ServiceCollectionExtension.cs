@@ -1,25 +1,25 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
+using System.Reflection;
 
 namespace Jt.SingleService.Core.Extensions
 {
-    public class ServiceCollectionExtension
+    public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddSwaggerGen(this IServiceCollection services, string title, string version, string xmlPath)
+        public static IServiceCollection AddSwaggerGen(this IServiceCollection services, string title, string version)
         {
-            return // 添加Swagger
-            services.AddSwaggerGen(c =>
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            // 添加Swagger 
+            return services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc(version, new OpenApiInfo { Title = title, Version = version });
-                c.IncludeXmlComments(xmlPath);
+                // c.IncludeXmlComments(xmlPath);
                 //开启权限小锁
                 c.OperationFilter<AddResponseHeadersFilter>();
                 c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
-                //在header添加token
+                // 在header添加token
                 c.OperationFilter<SecurityRequirementsOperationFilter>();
                 c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
