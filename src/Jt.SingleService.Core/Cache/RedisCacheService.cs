@@ -1,4 +1,5 @@
-﻿using Jt.SingleService.Core.Options;
+﻿using Jt.SingleService.Core.DI;
+using Jt.SingleService.Core.Options;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
@@ -9,7 +10,7 @@ namespace Jt.SingleService.Core.Cache
     /// <summary>
     /// Redis缓存操作
     /// </summary>
-    public class RedisCacheService : ICacheService
+    public class RedisCacheService : ICacheService, ISingletonInterface
     {
         /// <summary>
         /// IDatabase
@@ -35,13 +36,13 @@ namespace Jt.SingleService.Core.Cache
         /// <param name="database"></param>
         /// <param name="jsonOptions"></param>
         public RedisCacheService(IOptionsMonitor<AppSettings> setting,
-                                 JsonSerializerOptions jsonOptions)
+                                 IOptions<JsonSerializerOptions> jsonOptions)
         {
             var appSetting = setting.CurrentValue;
             _connection = ConnectionMultiplexer.Connect(appSetting.Redis.RedisConnectString);
             _cache = _connection.GetDatabase(appSetting.Redis.Database);
             _instance = appSetting.Redis.Instance;
-            _jsonOptions = jsonOptions;
+            _jsonOptions = jsonOptions.Value;
         }
         /// <summary>
         /// 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Jt.SingleService.Service.UserSvc
 {
-    public class UserSvc : IUserSvc
+    public class UserSvc : BaseSvc, IUserSvc
     {
         private readonly IUserRepo _userRepo;
 

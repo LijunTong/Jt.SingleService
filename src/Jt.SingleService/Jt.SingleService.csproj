@@ -16,6 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Jt.SingleService.Core\Jt.SingleService.Core.csproj" />
     <ProjectReference Include="..\Jt.SingleService.Data\Jt.SingleService.Data.csproj" />
     <ProjectReference Include="..\Jt.SingleService.Service\Jt.SingleService.Service.csproj" />
