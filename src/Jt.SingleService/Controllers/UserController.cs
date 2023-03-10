@@ -18,6 +18,7 @@ namespace Jt.SingleService.Controllers
         [HttpGet("GetUser")]
         public IActionResult GetUser()
         {
+            throw new NotImplementedException();
             return Ok();
         }
     }

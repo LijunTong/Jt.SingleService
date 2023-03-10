@@ -16,8 +16,11 @@ namespace Jt.SingleService
             builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             builder.Configuration.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
-            builder.Logging.ClearProviders();
-            builder.Host.UseSerilog(Log.Logger, dispose: true);
+            // builder.Logging.ClearProviders();
+            builder.Host.UseSerilog((context, logger) =>
+            {
+                logger.ReadFrom.Configuration(context.Configuration);
+            });
 
             var appSetting = builder.Configuration.GetSection("AppSettings").Get<AppSettings>();
 
@@ -43,6 +46,8 @@ namespace Jt.SingleService
 
             app.UseAuthorization();
 
+            app.UseGlobalException();
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -54,6 +59,8 @@ namespace Jt.SingleService
 
         public static void Run(WebApplication app)
         {
+            Log.Logger.Information($"Application Running! Env: {app.Environment.EnvironmentName}!");
+
             app.Run();
         }
     }
