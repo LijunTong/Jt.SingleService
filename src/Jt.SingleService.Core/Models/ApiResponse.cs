@@ -24,7 +24,7 @@ namespace Jt.SingleService.Core.Models
             };
         }
 
-        public static ApiResponse<T> GetFail(int code, string msg)
+        public static ApiResponse<T> GetFail(int code, string msg = "操作失败")
         {
             return new ApiResponse<T>
             {

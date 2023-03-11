@@ -1,4 +1,5 @@
 ﻿using Jt.SingleService.Core.Extensions;
+using Jt.SingleService.Core.Middlewares;
 using Jt.SingleService.Core.Options;
 using LogDashboard;
 using NLog.Web;
@@ -22,13 +23,14 @@ namespace Jt.SingleService
             builder.Logging.AddNLog("NLog.config");
             builder.Host.UseNLog();
 
-            var appSetting = builder.Configuration.GetSection("AppSettings").Get<AppSettings>();
+            var config = builder.Configuration.GetSection(AppSettings.Position);
+            var appSetting = config.Get<AppSettings>();
 
             services.AddControllers();
 
-            services.AddSwaggerGen(appSetting.AppName, appSetting.AppVersion);
+            services.AddSwaggerGen(appSetting);
 
-            services.AddCustomService();
+            services.AddCustomService(config);
 
             services.AddJsonSerializerOptions(options =>
             {
@@ -41,15 +43,16 @@ namespace Jt.SingleService
 
             services.AddLogDashboard();
 
+            services.AddAuthentication(appSetting);
+            services.AddAuthorization("Default");
         }
 
         public static void Use(WebApplication app)
         {
             var appSetting = app.Configuration.GetSection("AppSettings").Get<AppSettings>();
 
-            app.UseAuthorization();
-
             app.UseGlobalException();
+            app.UseRequestLog();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -58,6 +61,9 @@ namespace Jt.SingleService
             });
 
             app.UseLogDashboard();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapDefaultControllerRoute();
         }

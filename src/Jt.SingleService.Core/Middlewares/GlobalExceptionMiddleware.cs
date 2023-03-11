@@ -1,5 +1,6 @@
 ﻿using Jt.SingleService.Core.Extensions;
 using Jt.SingleService.Core.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,6 +33,14 @@ namespace Jt.SingleService.Core.Middlewares
                 string error = result.ToJosn();
                 await httpContext.Response.WriteAsync(error);
             }
+        }
+    }
+
+    public static class GlobalExceptionExtension
+    {
+        public static IApplicationBuilder UseGlobalException(this IApplicationBuilder app)
+        {
+            return app.UseMiddleware<GlobalExceptionMiddleware>();
         }
     }
 }

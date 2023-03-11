@@ -14,7 +14,7 @@ namespace Jt.SingleService.Core.Models
 
         public static int ParamError => 1001;
 
-        public static int UnAuth => 2001;
+        public static int UnAuth => 1401;
 
         public static int SystemError => 1999;
     }
