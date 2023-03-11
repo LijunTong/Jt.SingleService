@@ -1,8 +1,10 @@
 ﻿using Jt.SingleService.Core.DI;
+using Jt.SingleService.Core.Jwt;
 using Jt.SingleService.Core.Models;
 using Jt.SingleService.Core.Options;
 using Jt.SingleService.Core.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,10 +29,10 @@ namespace Jt.SingleService.Core.Extensions
         public static IServiceCollection AddCustomService(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<AppSettings>(configuration);
-
             services.RegisterLifetimesByInhreit(typeof(IScopedInterface));
             services.RegisterLifetimesByInhreit(typeof(ITransientInterface));
             services.RegisterLifetimesByInhreit(typeof(ISingletonInterface));
+            services.AddTransient<IAuthorizationHandler, AuthorizeHandler>();
             return services;
         }
 
@@ -143,14 +145,21 @@ namespace Jt.SingleService.Core.Extensions
                             //权限验证失败后执行
                             OnChallenge = async context =>
                             {
-                                //终止默认的返回结果(必须有)
                                 context.HandleResponse();
-                                var result = ApiResponse<string>.GetFail(ApiReturnCode.UnAuth, "token过期").ToJosn();
+                                var result = ApiResponse<string>.GetFail(ApiReturnCode.UnAuth, "令牌过期").ToJosn();
                                 context.Response.ContentType = "application/json";
                                 context.Response.Headers.Add("Access-Control-Allow-Origin", "*"); //解决跨域，因为没走管道
                                 context.Response.StatusCode = StatusCodes.Status200OK;
                                 await context.Response.WriteAsync(result);
-                            }
+                            },
+                            OnForbidden = async context =>
+                            {
+                                var result = ApiResponse<string>.GetFail(ApiReturnCode.Forbidden, "没有权限").ToJosn();
+                                context.Response.ContentType = "application/json";
+                                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");//解决跨域，因为没走管道
+                                context.Response.StatusCode = StatusCodes.Status200OK;
+                                await context.Response.WriteAsync(result);
+                            },
                         };
                     });
             return services;
@@ -163,6 +172,7 @@ namespace Jt.SingleService.Core.Extensions
                 x.AddPolicy(name, policy =>
                 {
                     policy.RequireAuthenticatedUser();
+                    policy.AddRequirements(new PolicyRequirement());
                 });
             });
         }

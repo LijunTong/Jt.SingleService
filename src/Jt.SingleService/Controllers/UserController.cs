@@ -45,5 +45,12 @@ namespace Jt.SingleService.Controllers
             User user = await _jwtHelper.UserAsync<User>(GetToken());
             return Ok(ApiResponse<User>.GetSucceed(user));
         }
+
+        [HttpGet("GetInfo")]
+        public async Task<ActionResult> GetInfo(string id)
+        {
+            User user = await _jwtHelper.UserAsync<User>(GetToken());
+            return Ok(ApiResponse<User>.GetSucceed(user));
+        }
     }
 }

@@ -16,6 +16,8 @@ namespace Jt.SingleService.Core.Models
 
         public static int UnAuth => 1401;
 
+        public static int Forbidden => 1403;
+
         public static int SystemError => 1999;
     }
 }

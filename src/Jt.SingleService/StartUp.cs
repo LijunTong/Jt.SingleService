@@ -30,8 +30,6 @@ namespace Jt.SingleService
 
             services.AddSwaggerGen(appSetting);
 
-            services.AddCustomService(config);
-
             services.AddJsonSerializerOptions(options =>
             {
                 options.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
@@ -45,6 +43,8 @@ namespace Jt.SingleService
 
             services.AddAuthentication(appSetting);
             services.AddAuthorization("Default");
+
+            services.AddCustomService(config);
         }
 
         public static void Use(WebApplication app)
