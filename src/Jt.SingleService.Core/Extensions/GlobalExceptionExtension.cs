@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Jt.SingleService.Core.Extensions
 {
-    public static class GlobalExceptionExtensions
+    public static class GlobalExceptionExtension
     {
         public static IApplicationBuilder UseGlobalException(this IApplicationBuilder app)
         {

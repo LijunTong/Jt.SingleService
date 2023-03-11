@@ -1,6 +1,7 @@
 ﻿using Jt.SingleService.Core.Extensions;
 using Jt.SingleService.Core.Options;
-using Serilog;
+using LogDashboard;
+using NLog.Web;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
@@ -16,11 +17,10 @@ namespace Jt.SingleService
             builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             builder.Configuration.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
-            // builder.Logging.ClearProviders();
-            builder.Host.UseSerilog((context, logger) =>
-            {
-                logger.ReadFrom.Configuration(context.Configuration);
-            });
+            builder.Logging.ClearProviders();
+            builder.Logging.SetMinimumLevel(LogLevel.Trace);
+            builder.Logging.AddNLog("NLog.config");
+            builder.Host.UseNLog();
 
             var appSetting = builder.Configuration.GetSection("AppSettings").Get<AppSettings>();
 
@@ -38,6 +38,9 @@ namespace Jt.SingleService
                 options.AllowTrailingCommas = true;
                 options.PropertyNameCaseInsensitive = true;
             });
+
+            services.AddLogDashboard();
+
         }
 
         public static void Use(WebApplication app)
@@ -54,12 +57,14 @@ namespace Jt.SingleService
                 c.SwaggerEndpoint($"/swagger/{appSetting.AppVersion}/swagger.json", $"{appSetting.AppName} {appSetting.AppVersion}");
             });
 
+            app.UseLogDashboard();
+
             app.MapDefaultControllerRoute();
         }
 
         public static void Run(WebApplication app)
         {
-            Log.Logger.Information($"Application Running! Env: {app.Environment.EnvironmentName}!");
+            app.Logger.LogInformation($"Application Running! Env: {app.Environment.EnvironmentName}!");
 
             app.Run();
         }
