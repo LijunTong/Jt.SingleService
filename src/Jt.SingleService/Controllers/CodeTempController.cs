@@ -100,5 +100,16 @@ namespace Jt.SingleService.Controllers
             };
             return Ok(ApiResponse<PagerOutput>.GetSucceed(pager));
         }
+
+        /// <summary>
+        /// 获取方案明细
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("GetTempsByScheme")]
+        public async Task<ActionResult> GetTempsByScheme(int schemeId)
+        {
+            var data = _service.GetCodeTempsByScheme(schemeId);
+            return ApiResult.Success(data);
+        }
     }
 }

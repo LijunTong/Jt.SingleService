@@ -10,5 +10,10 @@ namespace Jt.SingleService.Data.Repositories
         {
 
         }
+
+        public async Task<Menu> GetMenuByNameAsync(string name)
+        {
+            return await base.GetFirstAsync(x => x.Name == name);
+        }
     }
 }

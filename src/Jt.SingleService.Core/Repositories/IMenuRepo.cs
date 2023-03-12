@@ -5,6 +5,6 @@ namespace Jt.SingleService.Core.Repositories
 {
     public interface IMenuRepo : IBaseRepo<Menu>
     {
-
+        Task<Menu> GetMenuByNameAsync(string name);
     }
 }

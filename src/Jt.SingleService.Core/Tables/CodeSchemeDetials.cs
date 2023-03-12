@@ -10,9 +10,9 @@ namespace Jt.SingleService.Core.Tables
         	[Column("file_name")]
         	public string FileName { get; set; }
         	[Column("temp_id")]
-        	public Int32 TempId { get; set; }
+        	public string TempId { get; set; }
         	[Column("gen_scheme_id")]
-        	public Int32 GenSchemeId { get; set; }
+        	public string GenSchemeId { get; set; }
         	[Column("creater")]
         	public string Creater { get; set; }
         	[Column("create_time")]

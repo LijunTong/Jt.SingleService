@@ -12,5 +12,20 @@ namespace Jt.SingleService.Service.UserSvc
         {
             _repository = repository;
         }
+
+        public Task<List<Core.Tables.Action>> GetActionsAsync(string controller)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task InitActionsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task LoadActionsRedisAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
