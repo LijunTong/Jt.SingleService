@@ -1,19 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jt.SingleService.Core.Tables
 {
-    [Table("user")]
+   [Table("user")]
     public class User : BaseEntity
     {
-        public string Name { get; set; }
-
-        public string Account { get; set; }
-
-        public string Password { get; set; }
+        	[Column("id")]
+        	public string Id { get; set; }
+        	[Column("user_name")]
+        	public string UserName { get; set; }
+        	[Column("password")]
+        	public string Password { get; set; }
+        	[Column("register_time")]
+        	public DateTime RegisterTime { get; set; }
+        	[Column("login_time")]
+        	public DateTime LoginTime { get; set; }
+        	[Column("status")]
+        	public Int32 Status { get; set; }
+        	[Column("creater")]
+        	public string Creater { get; set; }
+        	[Column("create_time")]
+        	public DateTime CreateTime { get; set; }
+        	[Column("updater")]
+        	public string Updater { get; set; }
+        	[Column("up_time")]
+        	public DateTime UpTime { get; set; }
     }
 }

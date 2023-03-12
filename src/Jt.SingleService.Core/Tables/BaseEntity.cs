@@ -8,6 +8,5 @@ namespace Jt.SingleService.Core.Tables
 {
     public class BaseEntity
     {
-
     }
 }

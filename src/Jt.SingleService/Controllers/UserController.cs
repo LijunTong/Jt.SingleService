@@ -1,56 +1,104 @@
-﻿using Jt.SingleService.Core.Extensions;
-using Jt.SingleService.Core.Jwt;
 using Jt.SingleService.Core.Models;
+using Jt.SingleService.Core.Jwt;
 using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Core.Attributes;
+using Jt.SingleService.Core.Enums;
 using Jt.SingleService.Service.UserSvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
+using System;
 
 namespace Jt.SingleService.Controllers
 {
     [Route("User")]
     public class UserController : BaseController
     {
-        private readonly IUserSvc _userSvc;
-        private readonly JwtHelper _jwtHelper;
-        private readonly ILogger<UserController> _logger;
+        private IUserSvc _service;
+        private JwtHelper _jwtHelper;
 
-        public UserController(IUserSvc userSvc,
-                              JwtHelper jwtHelper,
-                              ILogger<UserController> logger)
+        public UserController(IUserSvc service, JwtHelper jwtHelper)
         {
-            _userSvc = userSvc;
-            _jwtHelper = jwtHelper;
-            _logger = logger;
+            _service = service;
+           _jwtHelper = jwtHelper;
         }
 
-        [AllowAnonymous]
-        [HttpPost("Login")]
-        public async Task<ActionResult> Login([FromBody] User user)
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("Insert")]
+        [Action("新增", EnumActionType.AuthorizeAndLog)]
+        public async Task<ActionResult> Insert([FromBody] User entity)
         {
-            _logger.LogInformation("Login：{user}", user.ToJosn());
-            if (user != null)
+            entity.CreateTime = DateTime.Now;
+            entity.Creater = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
+            await _service.InsertAsync(entity);
+            return Ok(ApiResponse<bool>.GetSucceed(true));
+        }
+
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("Update")]
+        [Action("修改", EnumActionType.AuthorizeAndLog)]
+        public async Task<ActionResult> Update([FromBody] User entity)
+        {
+            entity.UpTime = DateTime.Now;
+            entity.Updater = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
+            await _service.UpdateAsync(entity);
+            return Ok(ApiResponse<bool>.GetSucceed(true));
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("Delete")]
+        [Action("删除", EnumActionType.AuthorizeAndLog)]
+        public async Task<ActionResult> Delete(int id)
+        {
+            await _service.DeleteAsync(id);
+            return Ok(ApiResponse<bool>.GetSucceed(true));
+        }
+
+        /// <summary>
+        /// 通过id查询
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("Get")]
+        public async Task<ActionResult> Get(int id)
+        {
+            var data = await _service.GetEntityByIdAsync(id);
+            return Ok(ApiResponse<User>.GetSucceed(data));
+        }
+
+        /// <summary>
+        /// 查询
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("List")]
+        public async Task<ActionResult> List()
+        {
+            var data = await _service.GetAllListAsync();
+            return Ok(ApiResponse<List<User>>.GetSucceed(data));
+        }
+
+        /// <summary>
+        /// 分页查询
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("ListPager")]
+        [Action("列表", EnumActionType.AuthorizeAndLog)]
+        public async Task<ActionResult> ListPager([FromBody] PagerReq pagerReq)
+        {
+            var data = await _service.GetPagerListAsync(pager: pagerReq);
+            PagerOutput pager = new PagerOutput()
             {
-                string token = await _jwtHelper.TokenAsync(user);
-                return Ok(ApiResponse<string>.GetSucceed(token));
-            }
-            return Ok(ApiResponse<string>.GetFail(ApiReturnCode.ParamError, "参数有误"));
-        }
-
-        [HttpGet("GetUser")]
-        public async Task<ActionResult> GetUser(string id)
-        {
-            User user = await _jwtHelper.UserAsync<User>(GetToken());
-            return Ok(ApiResponse<User>.GetSucceed(user));
-        }
-
-        [HttpGet("GetInfo")]
-        public async Task<ActionResult> GetInfo(string id)
-        {
-            User user = await _jwtHelper.UserAsync<User>(GetToken());
-            return Ok(ApiResponse<User>.GetSucceed(user));
+                Total = pagerReq.Total,
+                Data = data
+            };
+            return Ok(ApiResponse<PagerOutput>.GetSucceed(pager));
         }
     }
 }

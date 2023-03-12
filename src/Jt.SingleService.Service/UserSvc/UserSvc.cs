@@ -1,19 +1,15 @@
-﻿using Jt.SingleService.Core.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Jt.SingleService.Core.Repositories;
+using Jt.SingleService.Core.Tables;
 
 namespace Jt.SingleService.Service.UserSvc
 {
-    public class UserSvc : BaseSvc, IUserSvc
+    public class UserSvc : BaseSvc<User>, IUserSvc
     {
-        private readonly IUserRepo _userRepo;
+        private readonly IUserRepo _repository;
 
-        public UserSvc(IUserRepo userRepo)
+        public UserSvc(IUserRepo repository) : base(repository)
         {
-            _userRepo = userRepo;
+            _repository = repository;
         }
     }
 }

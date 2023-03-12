@@ -1,4 +1,5 @@
-﻿using Jt.SingleService.Core.DI;
+﻿using Jt.SingleService.Core.DbContexts;
+using Jt.SingleService.Core.DI;
 using Jt.SingleService.Core.Jwt;
 using Jt.SingleService.Core.Models;
 using Jt.SingleService.Core.Options;
@@ -6,12 +7,15 @@ using Jt.SingleService.Core.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MySqlConnector;
 using Swashbuckle.AspNetCore.Filters;
+using System.Data.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
@@ -175,6 +179,13 @@ namespace Jt.SingleService.Core.Extensions
                     policy.AddRequirements(new PolicyRequirement());
                 });
             });
+        }
+
+        public static IServiceCollection AddMysql(this IServiceCollection services, AppSettings appSettings)
+        {
+            services.AddScoped<MysqlDbContext>();
+
+            return services;
         }
     }
 }

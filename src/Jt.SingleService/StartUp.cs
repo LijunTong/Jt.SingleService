@@ -45,6 +45,8 @@ namespace Jt.SingleService
             services.AddAuthorization("Default");
 
             services.AddCustomService(config);
+
+            services.AddMysql(appSetting);
         }
 
         public static void Use(WebApplication app)

@@ -13,7 +13,17 @@ namespace Jt.SingleService.Core.Options
         public string AppName { get; set; }
 
         public string AppVersion { get; set; }
-       
+
+        public ConnectionStringsConfig ConnectionStrings { get; set; }
+
+        public class ConnectionStringsConfig
+        {
+            public string Mysql { get; set; }
+
+            public string Version { get; set; }
+        }
+
+
         public RedisConfig Redis { get; set; }
 
         public class RedisConfig

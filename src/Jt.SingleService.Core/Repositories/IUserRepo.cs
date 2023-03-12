@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Core.Repositories;
 
 namespace Jt.SingleService.Core.Repositories
 {
-    public interface IUserRepo : IBaseRepo
+    public interface IUserRepo : IBaseRepo<User>
     {
+
     }
 }

@@ -1,13 +1,9 @@
-﻿using Jt.SingleService.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Jt.SingleService.Core.Tables;
 
 namespace Jt.SingleService.Service.UserSvc
 {
-    public interface IUserSvc: IBaseSvc
+    public interface IUserSvc : IBaseSvc<User>
     {
+        
     }
 }
