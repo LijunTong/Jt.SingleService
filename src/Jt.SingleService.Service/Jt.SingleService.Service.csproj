@@ -3,11 +3,15 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Jt.SingleService.Core\Jt.SingleService.Core.csproj" />
+    <ProjectReference Include="..\Jt.SingleService.Data\Jt.SingleService.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="aaa\" />
   </ItemGroup>
 
 </Project>

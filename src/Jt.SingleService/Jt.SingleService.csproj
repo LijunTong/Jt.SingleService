@@ -16,6 +16,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Logs\**" />
+    <Content Remove="Logs\**" />
+    <EmbeddedResource Remove="Logs\**" />
+    <None Remove="Logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LogDashboard" Version="1.4.8" />
+	<PackageReference Include="NLog.Web.AspNetCore" Version="5.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Jt.SingleService.Core\Jt.SingleService.Core.csproj" />
     <ProjectReference Include="..\Jt.SingleService.Data\Jt.SingleService.Data.csproj" />
     <ProjectReference Include="..\Jt.SingleService.Service\Jt.SingleService.Service.csproj" />

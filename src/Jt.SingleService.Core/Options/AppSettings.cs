@@ -8,10 +8,22 @@ namespace Jt.SingleService.Core.Options
 {
     public class AppSettings
     {
+        public static string Position = "AppSettings";
+
         public string AppName { get; set; }
 
         public string AppVersion { get; set; }
-       
+
+        public ConnectionStringsConfig ConnectionStrings { get; set; }
+
+        public class ConnectionStringsConfig
+        {
+            public string Mysql { get; set; }
+
+            public string Version { get; set; }
+        }
+
+
         public RedisConfig Redis { get; set; }
 
         public class RedisConfig
@@ -21,6 +33,21 @@ namespace Jt.SingleService.Core.Options
             public string RedisConnectString { get; set; }
 
             public int Database { get; set; }
+        }
+
+        public JwtConfig Jwt { get; set; }
+
+        public class JwtConfig
+        {
+            public string SecurityKey { get; set; }
+            
+            public string Issuer { get; set; }
+
+            public string Audience { get; set; }
+
+            public double TokenExpirationMins { get; set; }
+
+            public double RefreshTokenExpirationDays { get; set; }
         }
     }
 }
