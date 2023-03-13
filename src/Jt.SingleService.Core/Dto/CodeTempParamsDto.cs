@@ -10,7 +10,7 @@ namespace Jt.SingleService.Core.Dto
 {
     public class CodeTempParamsDto
     {
-        public int CodeSchemeId { get; set; }
+        public string CodeSchemeId { get; set; }
         public string TableName { get; set; }
         public string ClassName { get; set; }
         public List<DbFieldInfo> DbFieldInfos { get; set; }

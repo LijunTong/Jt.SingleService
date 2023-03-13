@@ -47,6 +47,9 @@ namespace Jt.SingleService
             services.AddCustomService(config);
 
             services.AddMysql(appSetting);
+
+            //解决跨域问题，添加允许访问的域
+            services.AddCors("Domain");
         }
 
         public static void Use(WebApplication app)
@@ -66,6 +69,8 @@ namespace Jt.SingleService
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseCors("Domain");//解决跨域问题，必须在UseRouting()和UseEndpoints()之间
 
             app.MapDefaultControllerRoute();
         }

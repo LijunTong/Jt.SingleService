@@ -7,6 +7,8 @@ using Jt.SingleService.Service.SysLogSvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using Jt.SingleService.Service.UserSvc;
+using Jt.SingleService.Core.Utils;
 
 namespace Jt.SingleService.Controllers
 {
@@ -15,11 +17,13 @@ namespace Jt.SingleService.Controllers
     {
         private ISysLogSvc _service;
         private JwtHelper _jwtHelper;
+        private ISysLogCacheSvc _cacheSvc;
 
-        public SysLogController(ISysLogSvc service, JwtHelper jwtHelper)
+        public SysLogController(ISysLogSvc service, JwtHelper jwtHelper, ISysLogCacheSvc cacheService)
         {
             _service = service;
-           _jwtHelper = jwtHelper;
+            _jwtHelper = jwtHelper;
+            _cacheSvc = cacheService;
         }
 
         /// <summary>
@@ -56,7 +60,7 @@ namespace Jt.SingleService.Controllers
         /// <returns></returns>
         [HttpPost("Delete")]
         [Action("删除", EnumActionType.AuthorizeAndLog)]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(string id)
         {
             await _service.DeleteAsync(id);
             return Ok(ApiResponse<bool>.GetSucceed(true));
@@ -67,7 +71,7 @@ namespace Jt.SingleService.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("Get")]
-        public async Task<ActionResult> Get(int id)
+        public async Task<ActionResult> Get(string id)
         {
             var data = await _service.GetEntityByIdAsync(id);
             return Ok(ApiResponse<SysLog>.GetSucceed(data));
@@ -90,7 +94,7 @@ namespace Jt.SingleService.Controllers
         /// <returns></returns>
         [HttpPost("ListPager")]
         [Action("列表", EnumActionType.AuthorizeAndLog)]
-        public async Task<ActionResult> ListPager([FromBody] PagerReq pagerReq)
+        public async Task<ActionResult> ListPager([FromQuery] PagerReq pagerReq)
         {
             var data = await _service.GetPagerListAsync(pager: pagerReq);
             PagerOutput pager = new PagerOutput()
@@ -99,6 +103,63 @@ namespace Jt.SingleService.Controllers
                 Data = data
             };
             return Ok(ApiResponse<PagerOutput>.GetSucceed(pager));
+        }
+
+        [HttpPost("GetActionStats")]
+        public async Task<ActionResult> GetActionStats()
+        {
+            var data =await _cacheSvc.GetActionStatsAsync();
+            return Successed(data);
+        }
+
+        [HttpPost("GetTodayActionStats")]
+        public async Task<ActionResult> GetTodayActionStats()
+        {
+            var data =await _cacheSvc.GetTodayActionStatsAsync();
+            return Successed(data);
+        }
+
+        [HttpPost("GetIpStats")]
+        public async Task<ActionResult> GetIpStats()
+        {
+            var data =await _cacheSvc.GetIpStatsAsync();
+            return Successed(data);
+        }
+
+        [HttpPost("GetTodayIpStats")]
+        public async Task<ActionResult> GetTodayIpStats()
+        {
+            var data =await _cacheSvc.GetTodayIpStatsAsync();
+            return Successed(data);
+        }
+
+        [HttpPost("GetTotalStats")]
+        public async Task<ActionResult> GetTotalStats()
+        {
+            var data =await _cacheSvc.GetTotalStatsAsync();
+            return Successed(data);
+        }
+
+        [HttpPost("GetTodayTotalStats")]
+        public async Task<ActionResult> GetTodayTotalStats()
+        {
+            var data =await _cacheSvc.GetTodayTotalStatsAsync();
+            return Successed(data);
+        }
+
+        [HttpPost("GetWeekTotalStats")]
+        public async Task<ActionResult> GetWeekTotalStats()
+        {
+            var data =await _cacheSvc.GetWeekTotalStatsAsync();
+            return Successed(data);
+        }
+
+        [HttpPost("GetLogType")]
+        public async Task<ActionResult> GetLogType()
+        {
+           await Task.CompletedTask;
+            var data = CHelperEnum.EnumToList(typeof(EnumLogType));
+            return Successed(data);
         }
     }
 }

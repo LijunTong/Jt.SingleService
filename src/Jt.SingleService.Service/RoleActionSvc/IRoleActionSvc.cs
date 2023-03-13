@@ -7,7 +7,7 @@ namespace Jt.SingleService.Service.RoleActionSvc
     {
         Task BindRoleActionsAsync(RoleActionDto roleActionDto);
 
-        Task<List<RoleAction>> GetRoleActionsAsync(int roleId);
+        Task<List<RoleAction>> GetRoleActionsAsync(string roleId);
 
         Task LoadRoleActionsRedisAsync();
     }

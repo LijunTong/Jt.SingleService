@@ -4,7 +4,7 @@ using Jt.SingleService.Core.Tables.DatabaseEntity;
 
 namespace Jt.SingleService.Service.CodeDbSvc
 {
-    public interface ICodeGeneratorService
+    public interface ICodeGeneratorSvc
     {
         Task SetDbTypeAsync(string dbType, string connectStr);
 

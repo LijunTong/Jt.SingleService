@@ -1,44 +1,40 @@
-﻿using JT.Framework.Core.IService;
-using JT.Framework.Core.Model;
-using JT.Framework.Library.CommonService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Action = JT.Framework.Core.Model.Action;
+﻿
+using Jt.SingleService.Core.Cache;
+using Jt.SingleService.Core.DI;
+using Jt.SingleService.Core.Tables;
+using Action = Jt.SingleService.Core.Tables.Action;
 
-namespace JT.Framework.Core.Service
+namespace Jt.SingleService.Service.MainSvc
 {
-    public class MainCacheSvc: IMainCacheSvc
+    public class MainCacheSvc : IMainCacheSvc, ITransientInterface
     {
-        private ICacheService _cacheService;
-        private readonly string KeyRoleAction = "KeyRoleAction"; 
+        private ICacheSvc _cacheSvc;
+        private readonly string KeyRoleAction = "KeyRoleAction";
         private readonly string KeyAction = "KeyAction";
-        
 
-        public MainCacheSvc(ICacheService cacheService)
+
+        public MainCacheSvc(ICacheSvc cacheSvc)
         {
-            _cacheService = cacheService;
+            _cacheSvc = cacheSvc;
         }
 
-        public void SetRoleActions(List<RoleAction> roleActions)
+        public async Task SetRoleActionsAsync(List<RoleAction> roleActions)
         {
-            _cacheService.Add(KeyRoleAction, roleActions);
+            await _cacheSvc.AddAsync(KeyRoleAction, roleActions);
         }
-        public List<RoleAction> GetRoleActions()
+        public Task<List<RoleAction>> GetRoleActionsAsync()
         {
-            return _cacheService.Get<List<RoleAction>>(KeyRoleAction);
-        }
-
-        public void SetActions(List<Action> actions)
-        {
-            _cacheService.Add(KeyAction, actions);
+            return _cacheSvc.GetAsync<List<RoleAction>>(KeyRoleAction);
         }
 
-        public List<Action> GetActions()
+        public async Task SetActionsAsync(List<Action> actions)
         {
-            return _cacheService.Get<List<Action>>(KeyAction);
+            await _cacheSvc.AddAsync(KeyAction, actions);
+        }
+
+        public Task<List<Action>> GetActionsAsync()
+        {
+            return _cacheSvc.GetAsync<List<Action>>(KeyAction);
         }
 
     }

@@ -1,3 +1,4 @@
+using Jt.SingleService.Core.Models;
 using Jt.SingleService.Core.Tables;
 
 namespace Jt.SingleService.Service.UserSvc
@@ -8,6 +9,6 @@ namespace Jt.SingleService.Service.UserSvc
 
         Task<bool> CheckUserNameExistsAsync(string userName);
 
-        void RegisteAsyncr(User user);
+        Task<ApiResponse<bool>> RegisterAsync(User user);
     }
 }

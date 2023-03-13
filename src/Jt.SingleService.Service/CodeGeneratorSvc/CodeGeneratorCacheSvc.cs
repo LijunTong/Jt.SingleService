@@ -1,42 +1,41 @@
-﻿using JT.Framework.Core.IService;
-using JT.Framework.Library.CommonService;
-using System;
+﻿using Jt.SingleService.Core.Cache;
+using Jt.SingleService.Core.DI;
 
 namespace Jt.SingleService.Service.CodeGeneratorSvc
 {
-    public class CodeGeneratorCacheSvc : BaseCacheService, ICodeGeneratorCacheService
+    public class CodeGeneratorCacheSvc : BaseCacheSvc, ICodeGeneratorCacheSvc, ITransientInterface
     {
-        ICacheService _cacheService;
+        ICacheSvc _cacheSvc;
 
         readonly string KeyDbType = "DbType";
         readonly string KeyDbConnectStr = "DbConStr";
 
-        public CodeGeneratorCacheSvc(ICacheService cacheService)
+        public CodeGeneratorCacheSvc(ICacheSvc CacheSvc)
         {
-            _cacheService = cacheService;
+            _cacheSvc = CacheSvc;
         }
 
-        public void SetDbType(string userName, string dbType, TimeSpan expiresIn)
+        public async Task SetDbTypeAsync(string userName, string dbType, TimeSpan expiresIn)
         {
             string key = MergeKey(userName, KeyDbType);
-            _cacheService.Add(key, dbType, expiresIn);
+            await _cacheSvc.AddAsync(key, dbType, expiresIn);
         }
-        public string GetDbType(string userName)
+        public async Task<string> GetDbTypeAsync(string userName)
         {
             string key = MergeKey(userName, KeyDbType);
-            return _cacheService.Get<string>(key);
+            return await _cacheSvc.GetAsync<string>(key);
         }
 
-        public void SetDbConnectStr(string userName, string connectStr, TimeSpan expiresIn)
+        public async Task SetDbConnectStrAsync(string userName, string connectStr, TimeSpan expiresIn)
         {
             string key = MergeKey(userName, KeyDbConnectStr);
-            _cacheService.Add(key, connectStr, expiresIn);
+            await _cacheSvc.AddAsync(key, connectStr, expiresIn);
         }
 
-        public string GetDbConnectStr(string userName)
+        public async Task<string> GetDbConnectStrAsync(string userName)
         {
             string key = MergeKey(userName, KeyDbConnectStr);
-            return _cacheService.Get<string>(key);
+            return await _cacheSvc.GetAsync<string>(key);
         }
     }
 }

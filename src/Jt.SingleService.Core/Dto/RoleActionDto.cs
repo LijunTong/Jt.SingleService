@@ -8,7 +8,7 @@ namespace Jt.SingleService.Core.Dto
 {
     public class RoleActionDto
     {
-        public int RoleId { get; set; }
+        public string RoleId { get; set; }
         public List<ActionDto> Actions { get; set; }
     }
     public class ActionDto

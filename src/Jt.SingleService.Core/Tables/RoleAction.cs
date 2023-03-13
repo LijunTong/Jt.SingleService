@@ -8,7 +8,7 @@ namespace Jt.SingleService.Core.Tables
         	[Column("id")]
         	public string Id { get; set; }
         	[Column("role_id")]
-        	public Int32 RoleId { get; set; }
+        	public string RoleId { get; set; }
         	[Column("controller")]
         	public string Controller { get; set; }
         	[Column("action")]

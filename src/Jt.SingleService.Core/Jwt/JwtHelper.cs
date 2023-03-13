@@ -71,5 +71,10 @@ namespace Jt.SingleService.Core.Jwt
             }
             return claims;
         }
+
+        public string RefreshToken()
+        {
+            return Guid.NewGuid().ToString();
+        }
     }
 }

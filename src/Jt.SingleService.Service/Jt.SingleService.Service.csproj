@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Jt.SingleService.Data\Jt.SingleService.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="aaa\" />
+  </ItemGroup>
+
 </Project>

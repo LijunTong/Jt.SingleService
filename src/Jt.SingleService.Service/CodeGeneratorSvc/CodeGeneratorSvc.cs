@@ -1,4 +1,5 @@
-﻿using Jt.SingleService.Core.Dto;
+﻿using Jt.SingleService.Core.DI;
+using Jt.SingleService.Core.Dto;
 using Jt.SingleService.Core.Enums;
 using Jt.SingleService.Core.Repositories;
 using Jt.SingleService.Core.Tables;
@@ -6,22 +7,14 @@ using Jt.SingleService.Core.Tables.DatabaseEntity;
 using Jt.SingleService.Core.Utils;
 using Jt.SingleService.Data.Repositories.DbExtracts;
 using Jt.SingleService.Service.CodeDbSvc;
-using JT.Framework.Core.IRepository;
-using JT.Framework.Core.IService;
-using JT.Framework.Core.Model;
-using JT.Framework.Core.Repository;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Jt.SingleService.Service.CodeGeneratorSvc
 {
-    public class CodeGeneratorService : ICodeGeneratorService
+    public class CodeGeneratorSvc : ICodeGeneratorSvc, ITransientInterface
     {
         private IDbExtractRepo _dbExtractRepo;
 
-        public CodeGeneratorService()
+        public CodeGeneratorSvc()
         {
         }
 

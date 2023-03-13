@@ -7,6 +7,6 @@ namespace Jt.SingleService.Core.Repositories
 {
     public interface ICodeSchemeDetialsRepo : IBaseRepo<CodeSchemeDetials>
     {
-        Task<List<CodeSchemeDetialsDto>> GetSchemeDetialsAsync(int schemeId);
+        Task<List<CodeSchemeDetialsDto>> GetSchemeDetialsAsync(string schemeId);
     }
 }

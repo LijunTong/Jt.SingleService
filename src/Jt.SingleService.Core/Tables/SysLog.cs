@@ -16,7 +16,7 @@ namespace Jt.SingleService.Core.Tables
         	[Column("log_time")]
         	public DateTime LogTime { get; set; }
         	[Column("user_id")]
-        	public Int32 UserId { get; set; }
+        	public string UserId { get; set; }
         	[Column("remote_address")]
         	public string RemoteAddress { get; set; }
         	[Column("controller")]

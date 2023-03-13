@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Jt.SingleService.Core.DI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace Jt.SingleService.Core.Utils
     /// 并且整个分布式系统内不会产生ID碰撞（由datacenter和workerId作区分），
     /// 并且效率较高。据说：snowflake每秒能够产生26万个ID。
     /// </summary>
-    public class CHelperSnowflake
+    public class CHelperSnowflake : ISingletonInterface
     {
         /// <summary>
         /// 机器ID
@@ -63,6 +64,11 @@ namespace Jt.SingleService.Core.Utils
         public static long sequenceMask = -1L ^ -1L << sequenceBits;
 
         private long lastTimestamp = -1L;
+
+        public CHelperSnowflake()
+        {
+            workerId = 1;
+        }
 
         /// <summary>
         /// 机器码

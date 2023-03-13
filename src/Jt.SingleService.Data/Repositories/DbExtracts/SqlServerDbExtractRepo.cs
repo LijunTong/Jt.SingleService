@@ -13,10 +13,11 @@ namespace Jt.SingleService.Data.Repositories.DbExtracts
         string _dbType = "";
         string _dbConnectionString = "";
 
-        public void SetDbType(string dbType,string connectStr)
+        public async Task SetDbTypeAsync(string dbType,string connectStr)
         {
             _dbType = dbType;
             _dbConnectionString = connectStr;
+            await Task.CompletedTask;
         }
         private DbContext GetDbContext()
         {

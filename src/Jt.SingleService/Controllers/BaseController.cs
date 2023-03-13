@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Jt.SingleService.Core.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,16 @@ namespace Jt.SingleService.Controllers
                 return token;
             }
             return null;
+        }
+
+        protected ActionResult Successed<T>(T t)
+        {
+            return Ok(ApiResponse<T>.GetSucceed(t));
+        }
+
+        protected ActionResult Fail(string msg)
+        {
+            return Ok(ApiResponse<string>.GetFail(ApiReturnCode.OperationFail, msg));
         }
     }
 }

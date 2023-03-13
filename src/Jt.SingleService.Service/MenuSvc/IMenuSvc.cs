@@ -27,7 +27,7 @@ namespace Jt.SingleService.Service.MenuSvc
         /// </summary>
         /// <param name="userId">用户id</param>
         /// <returns></returns>
-        Task<List<Menu>> GetBackMenuAsync(int userId);
+        Task<List<Menu>> GetBackMenuAsync(string userId);
 
         /// <summary>
         /// 根据路径获取菜单，一般路径都是唯一的

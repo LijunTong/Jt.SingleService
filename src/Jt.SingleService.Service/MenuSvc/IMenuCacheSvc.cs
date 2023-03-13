@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JT.Framework.Core.IService
+namespace Jt.SingleService.Service.MenuSvc
 {
     public interface IMenuCacheSvc
     {
-        void SetController(List<string> controllers);
-        List<string> GetController();
+        Task SetControllerAsync(List<string> controllers);
+
+        Task<List<string>> GetControllerAsync();
     }
 }

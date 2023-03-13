@@ -7,6 +7,6 @@ namespace Jt.SingleService.Service.UserRoleSvc
     {
         Task BindUserRoleAsync(UserRoleDto userRoleDto);
 
-        Task<List<UserRole>> GetUserRolesAsync(int userId);
+        Task<List<UserRole>> GetUserRolesAsync(string userId);
     }
 }

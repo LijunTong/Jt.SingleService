@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Jt.SingleService.Core.Cache
 {
-    public interface IBaseCacheService
+    public interface IBaseCacheSvc
     {
         string MergeKey(params string [] keys);
     }

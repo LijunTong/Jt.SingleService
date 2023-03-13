@@ -69,7 +69,10 @@ namespace Jt.SingleService.Core.Middlewares
                     response.Body.Seek(0, SeekOrigin.Begin);
                     var body = await new StreamReader(response.Body).ReadToEndAsync();
                     response.Body.Seek(0, SeekOrigin.Begin);
-                    log.ResponseBody = body;
+                    if (response.ContentType.Contains("application/json"))
+                    {
+                        log.ResponseBody = body;
+                    }
                     await responseBody.CopyToAsync(originalBodyStream);
                 }
             }

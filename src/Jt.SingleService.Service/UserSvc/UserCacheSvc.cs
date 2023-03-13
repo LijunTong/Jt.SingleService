@@ -1,56 +1,55 @@
-﻿using JT.Framework.Core.IService;
-using JT.Framework.Library.CommonService;
-using System;
+﻿using Jt.SingleService.Core.Cache;
+using Jt.SingleService.Core.DI;
 
-namespace JT.Framework.Core.Service
+namespace Jt.SingleService.Service.UserSvc
 {
-    public class UserCacheSvc: BaseCacheService, IUserCacheSvc
+    public class UserCacheSvc: BaseCacheSvc, IUserCacheSvc, ITransientInterface
     {
-        ICacheService _cacheService;
+        ICacheSvc _cacheSvc;
 
         readonly string KeyRefreshToken = "KeyRefreshToken";
         readonly string KeyToken = "KeyToken";
 
 
-        public UserCacheSvc(ICacheService cacheService)
+        public UserCacheSvc(ICacheSvc CacheSvc)
         {
-            _cacheService = cacheService;
+            _cacheSvc = CacheSvc;
         }
 
-        public bool ExistsRefreshToken(string userName)
-        {
-            string key = MergeKey(userName, KeyRefreshToken);
-            return _cacheService.Exists(key);
-        }
-
-        public void SetRefreshToken(string userName, string refreshToken, TimeSpan expiresIn)
+        public async Task<bool> ExistsRefreshTokenAsync(string userName)
         {
             string key = MergeKey(userName, KeyRefreshToken);
-            _cacheService.Add(key, refreshToken, expiresIn);
+            return await _cacheSvc.ExistsAsync(key);
         }
 
-        public string GetRefreshToken(string userName)
+        public async Task SetRefreshTokenAsync(string userName, string refreshToken, TimeSpan expiresIn)
         {
             string key = MergeKey(userName, KeyRefreshToken);
-            return _cacheService.Get<string>(key);
+            await _cacheSvc.AddAsync(key, refreshToken, expiresIn);
         }
 
-        public void RemoveRefreshToken(string userName)
+        public async Task<string> GetRefreshTokenAsync(string userName)
         {
             string key = MergeKey(userName, KeyRefreshToken);
-            _cacheService.Remove(key);
+            return await _cacheSvc.GetAsync<string>(key);
         }
 
-        public void SetToken(string userName, string token, TimeSpan expiresIn)
+        public async Task RemoveRefreshTokenAsync(string userName)
+        {
+            string key = MergeKey(userName, KeyRefreshToken);
+            await _cacheSvc.RemoveAsync(key);
+        }
+
+        public async Task SetTokenAsync(string userName, string token, TimeSpan expiresIn)
         {
             string key = MergeKey(userName, KeyToken);
-            _cacheService.Add(key, token, expiresIn);
+            await _cacheSvc.AddAsync(key, token, expiresIn);
         }
 
-        public string GetToken(string userName)
+        public async Task<string> GetTokenAsync(string userName)
         {
             string key = MergeKey(userName, KeyToken);
-            return _cacheService.Get<string>(key);
+            return await _cacheSvc.GetAsync<string>(key);
         }
 
     }

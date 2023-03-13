@@ -12,7 +12,7 @@ namespace Jt.SingleService.Core.Tables
         	[Column("des")]
         	public string Des { get; set; }
         	[Column("user_id")]
-        	public Int32 UserId { get; set; }
+        	public string UserId { get; set; }
         	[Column("creater")]
         	public string Creater { get; set; }
         	[Column("create_time")]

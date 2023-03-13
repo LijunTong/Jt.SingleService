@@ -1,51 +1,48 @@
-﻿using JT.Framework.Core.IService;
-using JT.Framework.Core.Model;
-using JT.Framework.Library.CommonService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Jt.SingleService.Core.Cache;
+using Jt.SingleService.Core.DI;
+using Jt.SingleService.Core.Dto;
+using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Service.SysLogSvc;
 
-namespace JT.Framework.Core.Service
+namespace Jt.SingleService.Service.UserSvc
 {
-    public class SysLogCacheSvc : ISysLogCacheSvc
+    public class SysLogCacheSvc : ISysLogCacheSvc, ITransientInterface
     {
         private readonly string KeySysLog = "KeySysLog";
         private readonly string KeyIpRecordStats = "KeyIpRecordStats";
         private readonly string KeyActionRecordStats = "KeyActionRecordStats";
         private readonly string KeyTotalRecordStats = "KeyTotalRecordStats";
-        private ICacheService _cacheService;
-        private ISysLogService _logService;
+        private ICacheSvc _cacheSvc;
+        private ISysLogSvc _logSvc;
 
 
-        public SysLogCacheSvc(ICacheService cacheService, ISysLogService logService)
+        public SysLogCacheSvc(ICacheSvc CacheSvc, ISysLogSvc logSvc)
         {
-            _cacheService = cacheService;
-            _logService = logService;
+            _cacheSvc = CacheSvc;
+            _logSvc = logSvc;
         }
 
-        public List<SysLog> PopLog()
+        public async Task<List<SysLog>> PopLogAsync()
         {
-            return _cacheService.ListPopAll<SysLog>(KeySysLog);
+            return await _cacheSvc.ListPopAllAsync<SysLog>(KeySysLog);
         }
 
-        public void PushLog(SysLog sysLog)
+        public async Task PushLogAsync(SysLog sysLog)
         {
-            _cacheService.ListRightPush(KeySysLog, sysLog);
+           await _cacheSvc.ListRightPushAsync(KeySysLog, sysLog);
         }
 
-        public void IncIpStats(string ip)
+        public async Task IncIpStatsAsync(string ip)
         {
-            _cacheService.HashSetInc(KeyIpRecordStats, ip);
+           await _cacheSvc.HashSetIncAsync(KeyIpRecordStats, ip);
         }
 
-        public List<KeyValueDto<long>> GetIpStats()
+        public async Task<List<KeyValueDto<long>>> GetIpStatsAsync()
         {
             List<KeyValueDto<long>> result = new List<KeyValueDto<long>>();
-            if (_cacheService.Exists(KeyIpRecordStats))
+            if (await _cacheSvc.ExistsAsync(KeyIpRecordStats))
             {
-                var val = _cacheService.GetHashSet<long>(KeyIpRecordStats);
+                var val = await _cacheSvc.GetHashSetAsync<long>(KeyIpRecordStats);
                 foreach (var item in val)
                 {
                     result.Add(new KeyValueDto<long>
@@ -57,37 +54,37 @@ namespace JT.Framework.Core.Service
             }
             else
             {
-                result = _logService.GetIpStats();
+                result =await _logSvc.GetIpStatsAsync();
                 foreach (var item in result)
                 {
-                    _cacheService.HashSet(KeyIpRecordStats, item.Key, item.Value.ToString());
+                  await  _cacheSvc.HashSetAsync(KeyIpRecordStats, item.Key, item.Value.ToString());
                 }
             }
             result = result.OrderByDescending(x => x.Value).Take(10).ToList();
             return result;
         }
 
-        public void IncTodayIpStats(string ip)
+        public async Task IncTodayIpStatsAsync(string ip)
         {
             string key = $"{DateTime.Now:d}{KeyIpRecordStats}";
-            if (!_cacheService.Exists(key))
+            if (! await _cacheSvc.ExistsAsync(key))
             {
-                _cacheService.HashSetInc(key, ip);
-                _cacheService.KeyExpireAt(key, DateTime.Now.AddDays(7));
+              await  _cacheSvc.HashSetIncAsync(key, ip);
+              await  _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
             }
             else
             {
-                _cacheService.HashSetInc(key, ip);
+              await  _cacheSvc.HashSetIncAsync(key, ip);
             }
         }
 
-        public List<KeyValueDto<long>> GetTodayIpStats()
+        public async Task<List<KeyValueDto<long>>> GetTodayIpStatsAsync()
         {
             List<KeyValueDto<long>> result = new List<KeyValueDto<long>>();
             string key = $"{DateTime.Now:d}{KeyIpRecordStats}";
-            if (_cacheService.Exists(key))
+            if (await _cacheSvc.ExistsAsync(key))
             {
-                var val = _cacheService.GetHashSet<long>(key);
+                var val = await _cacheSvc.GetHashSetAsync<long>(key);
                 foreach (var item in val)
                 {
                     result.Add(new KeyValueDto<long>
@@ -99,29 +96,29 @@ namespace JT.Framework.Core.Service
             }
             else
             {
-                result = _logService.GetTodayIpStats(DateTime.Now);
+                result =await _logSvc.GetTodayIpStatsAsync(DateTime.Now);
                 foreach (var item in result)
                 {
-                    _cacheService.HashSet(key, item.Key, item.Value.ToString());
+                  await  _cacheSvc.HashSetAsync(key, item.Key, item.Value.ToString());
                 }
-                _cacheService.KeyExpireAt(key, DateTime.Now.AddDays(7));
+              await  _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
             }
             result = result.OrderByDescending(x => x.Value).Take(10).ToList();
             return result;
         }
 
-        public void IncActionStats(string controller, string action)
+        public async Task IncActionStatsAsync(string controller, string action)
         {
             string field = $"/{controller}/{action}";
-            _cacheService.HashSetInc(KeyActionRecordStats, field);
+           await _cacheSvc.HashSetIncAsync(KeyActionRecordStats, field);
         }
 
-        public List<KeyValueDto<long>> GetActionStats()
+        public async Task<List<KeyValueDto<long>>> GetActionStatsAsync()
         {
             List<KeyValueDto<long>> result = new List<KeyValueDto<long>>();
-            if (_cacheService.Exists(KeyActionRecordStats))
+            if (await _cacheSvc.ExistsAsync(KeyActionRecordStats))
             {
-                var val = _cacheService.GetHashSet<long>(KeyActionRecordStats);
+                var val =await _cacheSvc.GetHashSetAsync<long>(KeyActionRecordStats);
                 foreach (var item in val)
                 {
                     result.Add(new KeyValueDto<long>
@@ -133,11 +130,11 @@ namespace JT.Framework.Core.Service
             }
             else
             {
-                var dbResult = _logService.GetActionStats();
+                var dbResult =await _logSvc.GetActionStatsAsync();
                 foreach (var item in dbResult)
                 {
                     string field = $"/{item.controller}/{item.action}";
-                    _cacheService.HashSet(KeyActionRecordStats, field, item.count.ToString());
+                   await _cacheSvc.HashSetAsync(KeyActionRecordStats, field, item.count.ToString());
                     result.Add(new KeyValueDto<long>
                     {
                         Key = field,
@@ -149,28 +146,28 @@ namespace JT.Framework.Core.Service
             return result;
         }
 
-        public void IncTodayActionStats(string controller, string action)
+        public async Task IncTodayActionStatsAsync(string controller, string action)
         {
             string key = $"{DateTime.Now:d}{KeyActionRecordStats}";
             string field = $"/{controller}/{action}";
-            if (!_cacheService.Exists(key))
+            if (!await _cacheSvc.ExistsAsync(key))
             {
-                _cacheService.HashSetInc(key, field);
-                _cacheService.KeyExpireAt(key, DateTime.Now.AddDays(7));
+              await  _cacheSvc.HashSetIncAsync(key, field);
+                await _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
             }
             else
             {
-                _cacheService.HashSetInc(key, field);
+               await _cacheSvc.HashSetIncAsync(key, field);
             }
         }
 
-        public List<KeyValueDto<long>> GetTodayActionStats()
+        public async Task<List<KeyValueDto<long>>> GetTodayActionStatsAsync()
         {
             List<KeyValueDto<long>> result = new List<KeyValueDto<long>>();
             string key = $"{DateTime.Now:d}{KeyActionRecordStats}";
-            if (_cacheService.Exists(key))
+            if (await _cacheSvc.ExistsAsync(key))
             {
-                var val = _cacheService.GetHashSet<long>(key);
+                var val =await _cacheSvc.GetHashSetAsync<long>(key);
                 foreach (var item in val)
                 {
                     result.Add(new KeyValueDto<long>
@@ -182,90 +179,90 @@ namespace JT.Framework.Core.Service
             }
             else
             {
-                var dbResult = _logService.GetTodayActionStats(DateTime.Now);
+                var dbResult =await _logSvc.GetTodayActionStatsAsync(DateTime.Now);
                 foreach (var item in dbResult)
                 {
                     string field = $"/{item.controller}/{item.action}";
-                    _cacheService.HashSet(key, field, item.count.ToString());
+                  await  _cacheSvc.HashSetAsync(key, field, item.count.ToString());
                     result.Add(new KeyValueDto<long>
                     {
                         Key = field,
                         Value = item.count
                     });
                 }
-                _cacheService.KeyExpireAt(key, DateTime.Now.AddDays(7));
+              await  _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
             }
             result = result.OrderByDescending(x => x.Value).Take(10).ToList();
             return result;
         }
 
-        public void IncTotalStats()
+        public async Task IncTotalStatsAsync()
         {
-            _cacheService.Inc(KeyTotalRecordStats);
+           await _cacheSvc.IncAsync(KeyTotalRecordStats);
         }
-        public long GetTotalStats()
+        public async Task<long> GetTotalStatsAsync()
         {
-            if (_cacheService.Exists(KeyTotalRecordStats))
+            if (await _cacheSvc.ExistsAsync(KeyTotalRecordStats))
             {
-                return (long)_cacheService.Get<long>(KeyTotalRecordStats);
+                return await _cacheSvc.GetAsync<long>(KeyTotalRecordStats);
             }
             else
             {
-                long result = _logService.GetTotalStats();
-                _cacheService.Add(KeyTotalRecordStats, result);
+                long result =await _logSvc.GetTotalStatsAsync();
+             await   _cacheSvc.AddAsync(KeyTotalRecordStats, result);
                 return result;
             }
         }
 
-        public void IncTodayTotalStats()
+        public async Task IncTodayTotalStatsAsync()
         {
             string key = $"{DateTime.Now:d}{KeyTotalRecordStats}";
-            if (!_cacheService.Exists(key))
+            if (!await _cacheSvc.ExistsAsync(key))
             {
-                _cacheService.Inc(key);
-                _cacheService.KeyExpireAt(key, DateTime.Now.AddDays(7));
+               await _cacheSvc.IncAsync(key);
+               await _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
             }
             else
             {
-                _cacheService.Inc(key);
+              await  _cacheSvc.IncAsync(key);
             }
         }
-        public long GetTodayTotalStats()
+        public async Task<long> GetTodayTotalStatsAsync()
         {
             string key = $"{DateTime.Now:d}{KeyTotalRecordStats}";
-            if (_cacheService.Exists(key))
+            if (await _cacheSvc.ExistsAsync(key))
             {
-                return (long)_cacheService.Get(key);
+                return (long) await _cacheSvc.GetAsync(key);
             }
             else
             {
-                long result = _logService.GetTodayTotalStats(DateTime.Now);
-                _cacheService.Add(key, result);
-                _cacheService.KeyExpireAt(key, DateTime.Now.AddDays(7));
+                long result =await _logSvc.GetTodayTotalStatsAsync(DateTime.Now);
+               await _cacheSvc.AddAsync(key, result);
+               await _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
                 return result;
             }
         }
 
-        public List<KeyValueDto<long>> GetWeekTotalStats()
+        public async Task<List<KeyValueDto<long>>> GetWeekTotalStatsAsync()
         {
             List<KeyValueDto<long>> weekTotalStats = new List<KeyValueDto<long>>();
             for (int i = 6; i >= 0; i--)
             {
                 var time = DateTime.Now.AddDays(-i);
                 string key = $"{time:d}{KeyTotalRecordStats}";
-                if (_cacheService.Exists(key))
+                if (await _cacheSvc.ExistsAsync(key))
                 {
                     weekTotalStats.Add(new KeyValueDto<long>
                     {
                         Key = $"{time:d}",
-                        Value = (long)_cacheService.Get<long>(key)
+                        Value = await _cacheSvc.GetAsync<long>(key)
                     });
                 }
                 else
                 {
-                    long result = _logService.GetTodayTotalStats(time);
-                    _cacheService.Add(key, result);
-                    _cacheService.KeyExpireAt(key, time.AddDays(7));
+                    long result =await _logSvc.GetTodayTotalStatsAsync(time);
+                   await _cacheSvc.AddAsync(key, result);
+                  await  _cacheSvc.KeyExpireAtAsync(key, time.AddDays(7));
                     weekTotalStats.Add(new KeyValueDto<long>
                     {
                         Key = $"{time:d}",

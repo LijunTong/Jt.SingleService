@@ -11,6 +11,7 @@ using System;
 namespace Jt.SingleService.Controllers
 {
     [Route("CodeDb")]
+    [AuthorController]
     public class CodeDbController : BaseController
     {
         private ICodeDbSvc _service;
@@ -56,7 +57,7 @@ namespace Jt.SingleService.Controllers
         /// <returns></returns>
         [HttpPost("Delete")]
         [Action("删除", EnumActionType.AuthorizeAndLog)]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(string id)
         {
             await _service.DeleteAsync(id);
             return Ok(ApiResponse<bool>.GetSucceed(true));
@@ -67,7 +68,7 @@ namespace Jt.SingleService.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("Get")]
-        public async Task<ActionResult> Get(int id)
+        public async Task<ActionResult> Get(string id)
         {
             var data = await _service.GetEntityByIdAsync(id);
             return Ok(ApiResponse<CodeDb>.GetSucceed(data));
@@ -90,7 +91,7 @@ namespace Jt.SingleService.Controllers
         /// <returns></returns>
         [HttpPost("ListPager")]
         [Action("列表", EnumActionType.AuthorizeAndLog)]
-        public async Task<ActionResult> ListPager([FromBody] PagerReq pagerReq)
+        public async Task<ActionResult> ListPager([FromQuery] PagerReq pagerReq)
         {
             var data = await _service.GetPagerListAsync(pager: pagerReq);
             PagerOutput pager = new PagerOutput()

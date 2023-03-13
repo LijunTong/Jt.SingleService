@@ -1,4 +1,5 @@
 using Jt.SingleService.Core.DbContexts;
+using Jt.SingleService.Core.DI;
 using Jt.SingleService.Core.Extensions;
 using Jt.SingleService.Core.Repositories;
 using Jt.SingleService.Core.Repositories.Dto;
@@ -8,14 +9,14 @@ using System.Data.Common;
 
 namespace Jt.SingleService.Data.Repositories
 {
-    public class CodeSchemeDetialsRepo : BaseRepo<CodeSchemeDetials>, ICodeSchemeDetialsRepo
+    public class CodeSchemeDetialsRepo : BaseRepo<CodeSchemeDetials>, ICodeSchemeDetialsRepo, ITransientInterface
     {
         public CodeSchemeDetialsRepo (MysqlDbContext dbContext) : base(dbContext)
         {
 
         }
 
-        public async Task<List<CodeSchemeDetialsDto>> GetSchemeDetialsAsync(int schemeId)
+        public async Task<List<CodeSchemeDetialsDto>> GetSchemeDetialsAsync(string schemeId)
         {
             string sql = @"SELECT d.*,t.name AS CodeTempName FROM code_scheme_detials AS d 
                         LEFT JOIN code_temp AS t

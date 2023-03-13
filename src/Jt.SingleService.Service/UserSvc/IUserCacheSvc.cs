@@ -1,18 +1,23 @@
-﻿using System;
+﻿using Jt.SingleService.Core.Cache;
+using System;
 
-namespace JT.Framework.Core.IService
+namespace Jt.SingleService.Service.UserSvc
 {
-    public interface IUserCacheSvc: IBaseCacheService
+    public interface IUserCacheSvc: IBaseCacheSvc
     {
         //RefreshToken
-        void SetRefreshToken(string userName, string refreshToken, TimeSpan expiresIn);
-        string GetRefreshToken(string userName);
-        void RemoveRefreshToken(string userName);
-        bool ExistsRefreshToken(string userName);
+        Task SetRefreshTokenAsync(string userName, string refreshToken, TimeSpan expiresIn);
+
+        Task<string> GetRefreshTokenAsync(string userName);
+
+        Task RemoveRefreshTokenAsync(string userName);
+
+        Task<bool> ExistsRefreshTokenAsync(string userName);
 
         //token
-        void SetToken(string userName, string token, TimeSpan expiresIn);
-        string GetToken(string userName);
+        Task SetTokenAsync(string userName, string token, TimeSpan expiresIn);
+
+        Task<string> GetTokenAsync(string userName);
 
     }
 }

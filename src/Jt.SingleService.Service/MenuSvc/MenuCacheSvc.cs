@@ -1,32 +1,28 @@
-﻿using JT.Framework.Core.IService;
-using JT.Framework.Library.CommonService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Jt.SingleService.Core.Cache;
+using Jt.SingleService.Core.DI;
 
-namespace JT.Framework.Core.Service
+namespace Jt.SingleService.Service.MenuSvc
 {
-    public class MenuCacheSvc : IMenuCacheSvc
+    public class MenuCacheSvc : IMenuCacheSvc, ITransientInterface
     {
         private readonly string KeyController = "KeyController";
-        private ICacheService _cacheService;
+        private ICacheSvc _cacheSvc;
 
-        public MenuCacheSvc(ICacheService cacheService)
+        public MenuCacheSvc(ICacheSvc CacheSvc)
         {
-            _cacheService = cacheService;
+            _cacheSvc = CacheSvc;
         }
 
-        
 
-        public void SetController(List<string> controllers)
+
+        public async Task SetControllerAsync(List<string> controllers)
         {
-            _cacheService.Add(KeyController, controllers);
+            await _cacheSvc.AddAsync(KeyController, controllers);
         }
-        public List<string> GetController()
+
+        public async Task<List<string>> GetControllerAsync()
         {
-            return _cacheService.Get<List<string>>(KeyController);
+            return await _cacheSvc.GetAsync<List<string>>(KeyController);
         }
 
 

@@ -1,18 +1,21 @@
-﻿using JT.Framework.Core.IService;
+﻿using Jt.SingleService.Core.Cache;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JT.Framework.Core.IService
+namespace Jt.SingleService.Service.CodeGeneratorSvc
 {
-    public interface ICodeGeneratorCacheSvc : IBaseCacheService
+    public interface ICodeGeneratorCacheSvc : IBaseCacheSvc
     {
         //代码生成工具
-        void SetDbType(string userName, string dbType, TimeSpan expiresIn);
-        string GetDbType(string userName);
-        void SetDbConnectStr(string userName, string connectStr, TimeSpan expiresIn);
-        string GetDbConnectStr(string userName);
+        Task SetDbTypeAsync(string userName, string dbType, TimeSpan expiresIn);
+
+        Task<string> GetDbTypeAsync(string userName);
+
+        Task SetDbConnectStrAsync(string userName, string connectStr, TimeSpan expiresIn);
+
+        Task<string> GetDbConnectStrAsync(string userName);
     }
 }

@@ -187,5 +187,16 @@ namespace Jt.SingleService.Core.Extensions
 
             return services;
         }
+
+        public static IServiceCollection AddCors(this IServiceCollection services, string name)
+        {
+            return services.AddCors(options =>
+            {
+                options.AddPolicy(name, builder =>
+                    builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+            });
+        }
     }
 }

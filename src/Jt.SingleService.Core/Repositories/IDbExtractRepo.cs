@@ -1,6 +1,4 @@
 ﻿using Jt.SingleService.Core.Tables.DatabaseEntity;
-using JT.Framework.Core.Model;
-using System.Collections.Generic;
 
 namespace Jt.SingleService.Core.Repositories
 {

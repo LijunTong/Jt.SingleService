@@ -7,6 +7,8 @@ using Jt.SingleService.Service.RoleSvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using Jt.SingleService.Core.Dto;
+using Jt.SingleService.Service.RoleActionSvc;
 
 namespace Jt.SingleService.Controllers
 {
@@ -15,11 +17,14 @@ namespace Jt.SingleService.Controllers
     {
         private IRoleSvc _service;
         private JwtHelper _jwtHelper;
+        private IRoleActionSvc _roleActionSvc;
 
-        public RoleController(IRoleSvc service, JwtHelper jwtHelper)
+
+        public RoleController(IRoleSvc service, JwtHelper jwtHelper, IRoleActionSvc roleActionSvc)
         {
             _service = service;
-           _jwtHelper = jwtHelper;
+            _jwtHelper = jwtHelper;
+            _roleActionSvc = roleActionSvc;
         }
 
         /// <summary>
@@ -56,7 +61,7 @@ namespace Jt.SingleService.Controllers
         /// <returns></returns>
         [HttpPost("Delete")]
         [Action("删除", EnumActionType.AuthorizeAndLog)]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(string id)
         {
             await _service.DeleteAsync(id);
             return Ok(ApiResponse<bool>.GetSucceed(true));
@@ -67,7 +72,7 @@ namespace Jt.SingleService.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("Get")]
-        public async Task<ActionResult> Get(int id)
+        public async Task<ActionResult> Get(string id)
         {
             var data = await _service.GetEntityByIdAsync(id);
             return Ok(ApiResponse<Role>.GetSucceed(data));
@@ -90,7 +95,7 @@ namespace Jt.SingleService.Controllers
         /// <returns></returns>
         [HttpPost("ListPager")]
         [Action("列表", EnumActionType.AuthorizeAndLog)]
-        public async Task<ActionResult> ListPager([FromBody] PagerReq pagerReq)
+        public async Task<ActionResult> ListPager([FromQuery] PagerReq pagerReq)
         {
             var data = await _service.GetPagerListAsync(pager: pagerReq);
             PagerOutput pager = new PagerOutput()
@@ -99,6 +104,20 @@ namespace Jt.SingleService.Controllers
                 Data = data
             };
             return Ok(ApiResponse<PagerOutput>.GetSucceed(pager));
+        }
+
+        /// <summary>
+        /// 编辑角色权限
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+
+        [Action("分配权限", EnumActionType.AuthorizeAndLog)]
+        public async Task<ActionResult> BindRoleActions(RoleActionDto roleActionDto)
+        {
+           await _roleActionSvc.BindRoleActionsAsync(roleActionDto);
+           await _roleActionSvc.LoadRoleActionsRedisAsync();
+            return Successed(true);
         }
     }
 }

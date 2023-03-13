@@ -6,6 +6,6 @@ namespace Jt.SingleService.Service.RoleSvc
     {
         Task<Role> GetRoleAsync(string code);
 
-        Task<List<Role>> GetRolesAsync(int userId);
+        Task<List<Role>> GetRolesAsync(string userId);
     }
 }

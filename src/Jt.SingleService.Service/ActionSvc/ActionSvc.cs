@@ -1,10 +1,11 @@
+using Jt.SingleService.Core.DI;
 using Jt.SingleService.Core.Repositories;
 using Jt.SingleService.Core.Tables;
 using Jt.SingleService.Service.ActionSvc;
 
 namespace Jt.SingleService.Service.UserSvc
 {
-    public class ActionSvc : BaseSvc<Core.Tables.Action>, IActionSvc
+    public class ActionSvc : BaseSvc<Core.Tables.Action>, IActionSvc, ITransientInterface
     {
         private readonly IActionRepo _repository;
 
@@ -13,9 +14,9 @@ namespace Jt.SingleService.Service.UserSvc
             _repository = repository;
         }
 
-        public Task<List<Core.Tables.Action>> GetActionsAsync(string controller)
+        public async Task<List<Core.Tables.Action>> GetActionsAsync(string controller)
         {
-            throw new NotImplementedException();
+            return await _repository.GetListAsync(x => x.Controller == controller);
         }
 
         public Task InitActionsAsync()

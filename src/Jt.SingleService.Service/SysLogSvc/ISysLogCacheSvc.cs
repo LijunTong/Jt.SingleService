@@ -1,79 +1,88 @@
-﻿using JT.Framework.Core.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Jt.SingleService.Core.Dto;
+using Jt.SingleService.Core.Tables;
 
-namespace JT.Framework.Core.IService
+namespace Jt.SingleService.Service.UserSvc
 {
     public interface ISysLogCacheSvc
     {
-        void PushLog(SysLog sysLog);
-        List<SysLog> PopLog();
+        Task PushLogAsync(SysLog sysLog);
+
+        Task<List<SysLog>> PopLogAsync();
 
         /// <summary>
         /// 访问次数按ip统计 自增
         /// </summary>
         /// <param name="ip"></param>
-        void IncIpStats(string ip);
+        Task IncIpStatsAsync(string ip);
+
         /// <summary>
         /// 获取ip统计
         /// </summary>
         /// <returns></returns>
-        List<KeyValueDto<long>> GetIpStats();
+        Task<List<KeyValueDto<long>>> GetIpStatsAsync();
+
         /// <summary>
         /// 访问次数按action统计 自增
         /// </summary>
         /// <param name="action"></param>
-        void IncActionStats(string controller, string action);
+        Task IncActionStatsAsync(string controller, string action);
+
         /// <summary>
         /// 获取action统计
         /// </summary>
         /// <returns></returns>
-        List<KeyValueDto<long>> GetActionStats();
+        Task<List<KeyValueDto<long>>> GetActionStatsAsync();
+
         /// <summary>
         /// 今日访问次数按ip统计 自增
         /// </summary>
         /// <param name="ip"></param>
-        void IncTodayIpStats(string ip);
+        Task IncTodayIpStatsAsync(string ip);
+
         /// <summary>
         /// 获取今日ip统计
         /// </summary>
         /// <returns></returns>
-        List<KeyValueDto<long>> GetTodayIpStats();
+        Task<List<KeyValueDto<long>>> GetTodayIpStatsAsync();
+
         /// <summary>
         /// 今日访问次数按action统计 自增
         /// </summary>
         /// <param name="action"></param>
-        void IncTodayActionStats(string controller, string action);
+        Task IncTodayActionStatsAsync(string controller, string action);
+
         /// <summary>
         /// 获取今日action统计
         /// </summary>
         /// <returns></returns>
-        List<KeyValueDto<long>> GetTodayActionStats();
+        Task<List<KeyValueDto<long>>> GetTodayActionStatsAsync();
+
         /// <summary>
         ///  总访问量 自增
         /// </summary>
-        void IncTotalStats();
+        Task IncTotalStatsAsync();
+
         /// <summary>
         /// 总访问量
         /// </summary>
         /// <returns></returns>
-        long GetTotalStats();
+        Task<long> GetTotalStatsAsync();
+
         /// <summary>
         /// 今日总访问量 自增
         /// </summary>
-        void IncTodayTotalStats();
+        Task IncTodayTotalStatsAsync();
+
         /// <summary>
         /// 今日总访问量
         /// </summary>
         /// <returns></returns>
-        long GetTodayTotalStats();
+        Task<long> GetTodayTotalStatsAsync();
+
         /// <summary>
         /// 获取一周的总访问量
         /// </summary>
         /// <returns></returns>
-        List<KeyValueDto<long>> GetWeekTotalStats();
+        Task<List<KeyValueDto<long>>> GetWeekTotalStatsAsync();
     }
 }

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Jt.SingleService.Core.Dto
 {
-    public class UserRoleDto
+    public class MenuBindDto
     {
-        public string UserId { get; set; }
-
-        public List<string> RoleIds { get; set; }
+        public string path { get; set; }
+        public string controller { get; set; }
+        public string title { get; set; }
     }
 }

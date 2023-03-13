@@ -1,12 +1,12 @@
-﻿using JT.Framework.Core.Model;
+﻿using Jt.SingleService.Core.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Action = JT.Framework.Core.Model.Action;
+using Action = Jt.SingleService.Core.Tables.Action;
 
-namespace JT.Framework.Core.IService
+namespace Jt.SingleService.Service.MainSvc
 {
     public interface IMainCacheSvc
     {
@@ -14,22 +14,25 @@ namespace JT.Framework.Core.IService
         /// 写入角色权限
         /// </summary>
         /// <param name="roleActions"></param>
-        void SetRoleActions(List<RoleAction> roleActions);
+        Task SetRoleActionsAsync(List<RoleAction> roleActions);
+
         /// <summary>
         /// 读取角色权限
         /// </summary>
         /// <returns></returns>
-        List<RoleAction> GetRoleActions();
+        Task<List<RoleAction>> GetRoleActionsAsync();
+
         /// <summary>
         /// 写入action
         /// </summary>
         /// <param name="actions"></param>
-        void SetActions(List<Action> actions);
+        Task SetActionsAsync(List<Action> actions);
+
         /// <summary>
         /// 读取action
         /// </summary>
         /// <returns></returns>
-        List<Action> GetActions();
-        
+        Task<List<Action>> GetActionsAsync();
+
     }
 }
