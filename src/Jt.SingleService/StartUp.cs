@@ -1,7 +1,9 @@
 ﻿using Jt.SingleService.Core.Extensions;
+using Jt.SingleService.Core.Filters;
 using Jt.SingleService.Core.Middlewares;
 using Jt.SingleService.Core.Options;
 using LogDashboard;
+using Microsoft.Extensions.Options;
 using NLog.Web;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -26,10 +28,6 @@ namespace Jt.SingleService
             var config = builder.Configuration.GetSection(AppSettings.Position);
             var appSetting = config.Get<AppSettings>();
 
-            services.AddControllers();
-
-            services.AddSwaggerGen(appSetting);
-
             services.AddJsonSerializerOptions(options =>
             {
                 options.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
@@ -37,7 +35,25 @@ namespace Jt.SingleService
                 options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.AllowTrailingCommas = true;
                 options.PropertyNameCaseInsensitive = true;
+                options.Converters.Add(new DateTimeJsonConverter());
             });
+
+            services.AddControllers(e =>
+            {
+                e.Filters.Add<ExceptionFilterAttribute>();
+            }).AddJsonOptions(option =>
+            {
+                option.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
+                option.JsonSerializerOptions.WriteIndented = true;
+                option.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                option.JsonSerializerOptions.AllowTrailingCommas = true;
+                option.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                option.JsonSerializerOptions.Converters.Add(new DateTimeJsonConverter());
+            });
+
+            services.AddSwaggerGen(appSetting);
+
+                                                                                                                                                                           
 
             services.AddLogDashboard();
 

@@ -170,8 +170,7 @@ namespace Jt.SingleService.Controllers
             JwtUser userInfo = new JwtUser
             {
                 Id = curUser.Id,
-                UserName = curUser.UserName,
-                Roles = roles
+                UserName = curUser.UserName
             };
 
             string accessToken = await _jwtHelper.TokenAsync(userInfo);

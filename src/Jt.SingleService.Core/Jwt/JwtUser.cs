@@ -13,6 +13,6 @@ namespace Jt.SingleService.Core.Jwt
 
         public string UserName { get; set; }
 
-        public List<Role> Roles { get; set; }
+        public string Roles { get; set; }
     }
 }
