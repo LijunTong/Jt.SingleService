@@ -108,7 +108,7 @@ namespace Jt.SingleService.Controllers
                 FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 FileStreamResult streamResult = new FileStreamResult(fileStream, new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream"));
                 streamResult.FileDownloadName = CHelperResSystem.GetFileName(filePath);
-                return Successed(streamResult);
+                return streamResult;
             });
         }
 
