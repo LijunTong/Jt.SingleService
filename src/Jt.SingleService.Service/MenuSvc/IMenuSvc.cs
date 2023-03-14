@@ -1,4 +1,4 @@
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Tables;
 
 namespace Jt.SingleService.Service.MenuSvc
 {

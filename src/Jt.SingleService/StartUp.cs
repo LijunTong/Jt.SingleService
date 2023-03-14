@@ -1,7 +1,8 @@
-﻿using Jt.SingleService.Core.Extensions;
+﻿using Jt.SingleService.Lib.Extensions;
 using Jt.SingleService.Core.Filters;
 using Jt.SingleService.Core.Middlewares;
 using Jt.SingleService.Core.Options;
+using Jt.SingleService.Extensions;
 using LogDashboard;
 using Microsoft.Extensions.Options;
 using NLog.Web;
@@ -41,6 +42,7 @@ namespace Jt.SingleService
             services.AddControllers(e =>
             {
                 e.Filters.Add<ExceptionFilterAttribute>();
+                e.Filters.Add<LogActionFilterAttribute>();
             }).AddJsonOptions(option =>
             {
                 option.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
@@ -62,13 +64,15 @@ namespace Jt.SingleService
 
             services.AddCustomService(config);
 
-            services.AddMysql(appSetting);
+            services.AddMysql();
 
             //解决跨域问题，添加允许访问的域
             services.AddCors("Domain");
+
+            services.AddQuartz(appSetting);
         }
 
-        public static void Use(WebApplication app)
+        public static async void Use(WebApplication app)
         {
             var appSetting = app.Configuration.GetSection("AppSettings").Get<AppSettings>();
 
@@ -87,6 +91,15 @@ namespace Jt.SingleService
             app.UseAuthorization();
 
             app.UseCors("Domain");//解决跨域问题，必须在UseRouting()和UseEndpoints()之间
+
+            try
+            {
+                await app.InitControllerAsync();
+            }
+            catch (Exception ex)
+            {
+                app.Logger.LogError(ex, $"Init Exception:{ex.Message}");
+            }
 
             app.MapDefaultControllerRoute();
         }

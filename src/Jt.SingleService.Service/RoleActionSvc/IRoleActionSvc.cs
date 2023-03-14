@@ -1,5 +1,5 @@
-using Jt.SingleService.Core.Dto;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Dto;
+using Jt.SingleService.Data.Tables;
 
 namespace Jt.SingleService.Service.RoleActionSvc
 {

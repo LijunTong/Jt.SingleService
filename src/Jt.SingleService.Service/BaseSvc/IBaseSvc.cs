@@ -1,5 +1,5 @@
 ﻿using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Tables;
 using System.Linq.Expressions;
 
 namespace Jt.SingleService.Service

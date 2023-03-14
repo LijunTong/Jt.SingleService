@@ -1,9 +1,10 @@
-using Jt.SingleService.Core.DI;
-using Jt.SingleService.Core.Dto;
-using Jt.SingleService.Core.Repositories;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Dto;
+using Jt.SingleService.Data.Tables;
+using Jt.SingleService.Data.Repositories.Interface;
 using Jt.SingleService.Service.MainSvc;
 using Jt.SingleService.Service.RoleActionSvc;
+using Jt.SingleService.Lib.DI;
+using Jt.SingleService.Lib.Utils;
 
 namespace Jt.SingleService.Service.UserSvc
 {
@@ -11,11 +12,13 @@ namespace Jt.SingleService.Service.UserSvc
     {
         private readonly IRoleActionRepo _repository;
         private readonly IMainCacheSvc _mainCacheSvc;
+        private readonly CHelperSnowflake _snowflake;
 
-        public RoleActionSvc(IRoleActionRepo repository, IMainCacheSvc mainCacheSvc) : base(repository)
+        public RoleActionSvc(IRoleActionRepo repository, IMainCacheSvc mainCacheSvc, CHelperSnowflake snowflake) : base(repository)
         {
             _repository = repository;
             _mainCacheSvc = mainCacheSvc;
+            _snowflake = snowflake;
         }
 
         public async Task BindRoleActionsAsync(RoleActionDto roleActionDto)
@@ -28,13 +31,14 @@ namespace Jt.SingleService.Service.UserSvc
                 {
                     roleActions.Add(new RoleAction
                     {
+                        Id = _snowflake.NextId().ToString(),
                         RoleId = roleActionDto.RoleId,
                         Controller = x.Controller,
                         Action = x.Action,
                         CreateTime = DateTime.Now,
-                        Creater = "",
+                        Creater = roleActionDto.UserId,
                         UpTime = DateTime.Now,
-                        Updater = ""
+                        Updater = roleActionDto.UserId
                     });
                 });
                await _repository.InsertListAsync(roleActions);

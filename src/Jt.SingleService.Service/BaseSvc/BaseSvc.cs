@@ -1,7 +1,7 @@
-﻿using Jt.SingleService.Core.DI;
+﻿using Jt.SingleService.Lib.DI;
 using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Repositories;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Repositories.Interface;
+using Jt.SingleService.Data.Tables;
 using System.Linq.Expressions;
 
 namespace Jt.SingleService.Service

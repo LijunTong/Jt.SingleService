@@ -1,12 +1,12 @@
-﻿using Jt.SingleService.Core.DI;
-using Jt.SingleService.Core.Dto;
+﻿using Jt.SingleService.Data.Dto;
 using Jt.SingleService.Core.Enums;
-using Jt.SingleService.Core.Repositories;
-using Jt.SingleService.Core.Tables;
-using Jt.SingleService.Core.Tables.DatabaseEntity;
-using Jt.SingleService.Core.Utils;
-using Jt.SingleService.Data.Repositories.DbExtracts;
+using Jt.SingleService.Data.Tables;
+using Jt.SingleService.Data.Tables.DatabaseEntity;
+using Jt.SingleService.Lib.Utils;
+using Jt.SingleService.Data.Repositories.Impl.DbExtracts;
+using Jt.SingleService.Data.Repositories.Interface;
 using Jt.SingleService.Service.CodeDbSvc;
+using Jt.SingleService.Lib.DI;
 
 namespace Jt.SingleService.Service.CodeGeneratorSvc
 {

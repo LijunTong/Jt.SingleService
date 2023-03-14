@@ -1,6 +1,6 @@
 using Jt.SingleService.Core.Models;
 using Jt.SingleService.Core.Jwt;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Tables;
 using Jt.SingleService.Core.Attributes;
 using Jt.SingleService.Core.Enums;
 using Jt.SingleService.Service.SysLogSvc;
@@ -8,11 +8,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using Jt.SingleService.Service.UserSvc;
-using Jt.SingleService.Core.Utils;
+using Jt.SingleService.Lib.Utils;
 
 namespace Jt.SingleService.Controllers
 {
     [Route("SysLog")]
+    [AuthorController]
     public class SysLogController : BaseController
     {
         private ISysLogSvc _service;

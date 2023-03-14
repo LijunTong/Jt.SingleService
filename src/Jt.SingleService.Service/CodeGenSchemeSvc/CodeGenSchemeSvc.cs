@@ -1,12 +1,13 @@
-using Jt.SingleService.Core.DI;
-using Jt.SingleService.Core.Dto;
+using Jt.SingleService.Data.Dto;
+using Jt.SingleService.Lib.Extensions;
 using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Repositories;
-using Jt.SingleService.Core.Repositories.Dto;
-using Jt.SingleService.Core.Tables;
-using Jt.SingleService.Core.Utils;
+using Jt.SingleService.Data.Repositories.Dto;
+using Jt.SingleService.Data.Tables;
+using Jt.SingleService.Lib.Utils;
+using Jt.SingleService.Data.Repositories.Interface;
 using Jt.SingleService.Service.CodeGenSchemeSvc;
 using Microsoft.EntityFrameworkCore.Storage;
+using Jt.SingleService.Lib.DI;
 
 namespace Jt.SingleService.Service.UserSvc
 {
@@ -40,38 +41,50 @@ namespace Jt.SingleService.Service.UserSvc
             return await _schemeDetialsRepository.GetSchemeDetialsAsync(schemeId);
         }
 
-        public async Task InsertSchemeAsync(CodeGenScheme entity, List<CodeTempDto> temps)
+        public async Task InsertSchemeAsync(CodeGenSchemeDto dto)
         {
             using (var tran = await _repository.BeginTransactionAsync())
             {
                 try
                 {
+                    string id = _snowflake.NextId().ToString();
                     List<CodeSchemeDetials> codeSchemeDetials = new List<CodeSchemeDetials>();
-                    if (entity.Id == _snowflake.NextId().ToString())
+                    if (dto.CodeGenScheme.Id.IsNullOrWhiteSpace())
                     {
-                        await _repository.InsertAsync(entity);
+                        dto.CodeGenScheme.Id = id;
+                        dto.CodeGenScheme.Creater = dto.UserId;
+                        dto.CodeGenScheme.CreateTime = DateTime.Now;
+                        dto.CodeGenScheme.Updater = dto.UserId;
+                        dto.CodeGenScheme.UpTime = DateTime.Now;
+                        await _repository.InsertAsync(dto.CodeGenScheme);
                     }
                     else
                     {
-                       await  _repository.UpdateAsync(entity);
+                        var entity = await GetEntityByIdAsync(dto.CodeGenScheme.Id);
+                        entity.Updater = dto.UserId;
+                        entity.UpTime = DateTime.Now;
+                        entity.Name = dto.CodeGenScheme.Name;
+                        entity.Des = dto.CodeGenScheme.Des;
+                        await  _repository.UpdateAsync(entity);
                     }
                     await _repository.SaveAsync();
-                    foreach (var temp in temps)
+                    foreach (var temp in dto.Temps)
                     {
                         CodeSchemeDetials detials = new CodeSchemeDetials
                         {
-                            GenSchemeId = entity.Id,
+                            Id = _snowflake.NextId().ToString(),
+                            GenSchemeId = id,
                             TempId = temp.Id,
                             FileName = temp.FileName,
                             CreateTime = DateTime.Now,
-                            Creater = "",
-                            Updater = "",
+                            Creater = dto.UserId,
+                            Updater = dto.UserId,
                             UpTime = DateTime.Now,
                         };
                         codeSchemeDetials.Add(detials);
                     }
                     await _schemeDetialsRepository.UseTransactionAsync(tran.GetDbTransaction());
-                    await _schemeDetialsRepository.DeleteAsync(x => x.GenSchemeId == entity.Id);
+                    await _schemeDetialsRepository.DeleteAsync(x => x.GenSchemeId == id);
                     await _schemeDetialsRepository.InsertListAsync(codeSchemeDetials);
                     await _schemeDetialsRepository.SaveAsync();
                     tran.Commit();

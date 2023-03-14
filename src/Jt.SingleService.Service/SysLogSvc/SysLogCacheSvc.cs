@@ -1,7 +1,7 @@
 ﻿using Jt.SingleService.Core.Cache;
-using Jt.SingleService.Core.DI;
-using Jt.SingleService.Core.Dto;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Dto;
+using Jt.SingleService.Data.Tables;
+using Jt.SingleService.Lib.DI;
 using Jt.SingleService.Service.SysLogSvc;
 
 namespace Jt.SingleService.Service.UserSvc

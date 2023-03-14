@@ -1,10 +1,10 @@
-using Jt.SingleService.Core.DI;
 using Jt.SingleService.Core.Enums;
 using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Repositories;
-using Jt.SingleService.Core.Tables;
-using Jt.SingleService.Core.Utils;
+using Jt.SingleService.Data.Tables;
+using Jt.SingleService.Lib.Utils;
+using Jt.SingleService.Data.Repositories.Interface;
 using Microsoft.EntityFrameworkCore.Storage;
+using Jt.SingleService.Lib.DI;
 
 namespace Jt.SingleService.Service.UserSvc
 {

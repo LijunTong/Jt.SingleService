@@ -1,13 +1,13 @@
-using Jt.SingleService.Core.Dto;
+using Jt.SingleService.Data.Dto;
 using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Repositories.Dto;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Repositories.Dto;
+using Jt.SingleService.Data.Tables;
 
 namespace Jt.SingleService.Service.CodeGenSchemeSvc
 {
     public interface ICodeGenSchemeSvc : IBaseSvc<CodeGenScheme>
     {
-        Task InsertSchemeAsync(CodeGenScheme entity, List<CodeTempDto> temps);
+        Task InsertSchemeAsync(CodeGenSchemeDto dto);
 
         Task<List<CodeGenScheme>> GetListByUserIdAsync(string userId);
 

@@ -1,16 +1,16 @@
-using Jt.SingleService.Core.DI;
 using Jt.SingleService.Core.Enums;
-using Jt.SingleService.Core.Extensions;
-using Jt.SingleService.Core.Repositories;
-using Jt.SingleService.Core.Tables;
-using Jt.SingleService.Core.Utils;
+using Jt.SingleService.Lib.Extensions;
+using Jt.SingleService.Data.Tables;
+using Jt.SingleService.Lib.Utils;
+using Jt.SingleService.Data.Repositories.Interface;
 using Jt.SingleService.Service.ActionSvc;
 using Jt.SingleService.Service.MainSvc;
 using Jt.SingleService.Service.MenuSvc;
 using Jt.SingleService.Service.RoleSvc;
 using Jt.SingleService.Service.UserRoleSvc;
 using System.Reflection;
-using Action = Jt.SingleService.Core.Tables.Action;
+using Action = Jt.SingleService.Data.Tables.Action;
+using Jt.SingleService.Lib.DI;
 
 namespace Jt.SingleService.Service.UserSvc
 {
@@ -22,8 +22,9 @@ namespace Jt.SingleService.Service.UserSvc
         private readonly IMainCacheSvc _mainCacheSvc;
         private readonly IUserRoleSvc _userRoleSvc;
         private readonly IRoleSvc _roleSvc;
+        private readonly IRoleActionRepo _roleActionRepo;
 
-        public MenuSvc(IMenuRepo repository, IMenuCacheSvc menuCacheSvc, IActionSvc actionSvc, IMainCacheSvc mainCacheSvc, IUserRoleSvc userRoleSvc, IRoleSvc roleSvc) : base(repository)
+        public MenuSvc(IMenuRepo repository, IMenuCacheSvc menuCacheSvc, IActionSvc actionSvc, IMainCacheSvc mainCacheSvc, IUserRoleSvc userRoleSvc, IRoleSvc roleSvc, IRoleActionRepo roleActionRepo) : base(repository)
         {
             _repository = repository;
             _menuCacheSvc = menuCacheSvc;
@@ -31,6 +32,7 @@ namespace Jt.SingleService.Service.UserSvc
             _mainCacheSvc = mainCacheSvc;
             _userRoleSvc = userRoleSvc;
             _roleSvc = roleSvc;
+            _roleActionRepo = roleActionRepo;
         }
 
         public async Task BindMenuAndControllerAsync(Menu menu)
@@ -59,7 +61,8 @@ namespace Jt.SingleService.Service.UserSvc
             {
                 return await GetMenuTreeAsync("", menus);
             }
-            var userPermissions = await _mainCacheSvc.GetRoleActionsAsync();
+            var roleIds = roles.Select(x => x.Id).ToList();
+            var userPermissions = await _roleActionRepo.GetListAsync(x => roleIds.Contains(x.RoleId));
             var roleAction = userPermissions.Where(x => roles.Any(r => r.Id == x.RoleId) && x.Action == EnumAction.Display.ToString());//角色对应菜单展示的权限
             menus = menus.Where(x => roleAction.Any(r => r.Controller == x.Controller || r.Controller == x.Name)).ToList();
             return await GetMenuTreeAsync("", menus);
@@ -137,7 +140,7 @@ namespace Jt.SingleService.Service.UserSvc
 
         private async Task<List<Menu>> GetMenuTreeAsync(string parentId, List<Menu> menus)
         {
-            List<Menu> roots = menus.FindAll(x => x.ParentId == parentId);
+            List<Menu> roots = menus.FindAll(x => x.ParentId == parentId).OrderBy(x => x.SortIndex).ToList();
             if (roots != null && roots.Count > 0)
             {
                 foreach (var item in roots)

@@ -1,6 +1,6 @@
 using Jt.SingleService.Core.Models;
 using Jt.SingleService.Core.Jwt;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Tables;
 using Jt.SingleService.Core.Attributes;
 using Jt.SingleService.Core.Enums;
 using Jt.SingleService.Service.UserSvc;
@@ -9,14 +9,16 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using Jt.SingleService.Service.UserRoleSvc;
 using Jt.SingleService.Service.RoleSvc;
-using Jt.SingleService.Core.Dto;
-using Jt.SingleService.Core.Utils;
+using Jt.SingleService.Data.Dto;
+using Jt.SingleService.Lib.Utils;
 using Jt.SingleService.Core.Options;
 using Microsoft.Extensions.Options;
+using Jt.SingleService.Lib.Extensions;
 
 namespace Jt.SingleService.Controllers
 {
     [Route("User")]
+    [AuthorController]
     public class UserController : BaseController
     {
         private readonly IUserSvc _userSvc;
@@ -170,7 +172,8 @@ namespace Jt.SingleService.Controllers
             JwtUser userInfo = new JwtUser
             {
                 Id = curUser.Id,
-                UserName = curUser.UserName
+                UserName = curUser.UserName,
+                Roles = roles.JoinBySeparator(x => x.Id, ","),
             };
 
             string accessToken = await _jwtHelper.TokenAsync(userInfo);
