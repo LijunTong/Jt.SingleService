@@ -88,6 +88,7 @@ namespace Jt.SingleService.Controllers
         public async Task<ActionResult> Get(string id)
         {
             var data = await _userSvc.GetEntityByIdAsync(id);
+            data.UserRoles = await _userRoleSvc.GetUserRolesAsync(id);
             return Ok(ApiResponse<User>.GetSucceed(data));
         }
 

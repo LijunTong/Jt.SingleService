@@ -84,7 +84,8 @@ namespace Jt.SingleService.Controllers
         [HttpPost("List")]
         public async Task<ActionResult> List()
         {
-            var data = await _service.GetAllListAsync();
+            string userId = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
+            var data = await _service.GetListByUserIdAsync(userId);
             return Ok(ApiResponse<List<CodeGenScheme>>.GetSucceed(data));
         }
 
@@ -96,7 +97,8 @@ namespace Jt.SingleService.Controllers
         [Action("列表", EnumActionType.AuthorizeAndLog)]
         public async Task<ActionResult> ListPager([FromQuery] PagerReq pagerReq)
         {
-            var data = await _service.GetPagerListAsync(pager: pagerReq);
+            string userId = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
+            var data = await _service.GetPageListByUserIdAsync(pagerReq, userId);
             PagerOutput pager = new PagerOutput()
             {
                 Total = pagerReq.Total,
