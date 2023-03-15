@@ -43,6 +43,12 @@ namespace Jt.SingleService.Lib.Utils
             return assembly.GetTypes().Where(x => x.BaseType == type).ToList();
         }
 
+        public static List<Type> GetDerived(Assembly[] assembly, Type type)
+        {
+            var types = assembly.SelectMany(x => x.GetTypes()).Where(x => x.BaseType == type);
+            return types.ToList();
+        }
+
         public static List<Type> GetTypesByAttribute(Assembly assembly, Type type)
         {
             var types = assembly.GetTypes().Where(x => x.CustomAttributes.Any(a => a.AttributeType == type));

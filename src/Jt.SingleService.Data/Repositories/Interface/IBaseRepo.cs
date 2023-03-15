@@ -46,5 +46,7 @@ namespace Jt.SingleService.Data.Repositories.Interface
         Task<IQueryable<T>> IQueryableAsync();
 
         Task<IQueryable<T>> IQueryableAsync(Expression<Func<T, bool>> predicate);
+
+        Task UpdateFieldsAsync(T entity, Expression<Func<T, object>>[] propertyExpressions);
     }
 }

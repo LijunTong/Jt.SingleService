@@ -109,10 +109,8 @@ namespace Jt.SingleService.Service.UserSvc
         public async Task InitControllerAsync(Type type)
         {
             List<string> controllers = new List<string>();
-                Assembly assembly = Assembly.LoadFrom(CHelperAppDomain.CombineWithBaseDirectory("Jt.SingleService.dll"));
-                var controllerTypes = CHelperAssembly.GetDerived(assembly, type);
-                controllerTypes.ForEach(x => controllers.Add(x.Name));
-
+            var controllerTypes = CHelperAssembly.GetDerived(AppDomain.CurrentDomain.GetAssemblies(), type);
+            controllerTypes.ForEach(x => controllers.Add(x.Name));
             await _menuCacheSvc.SetControllerAsync(controllers);
         }
 

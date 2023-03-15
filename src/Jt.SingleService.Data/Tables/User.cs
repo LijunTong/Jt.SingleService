@@ -25,6 +25,10 @@ namespace Jt.SingleService.Data.Tables
         public string Updater { get; set; }
         [Column("up_time")]
         public DateTime UpTime { get; set; }
+
+        [Column("avatar")]
+        public string Avatar { get; set; }
+
         [NotMapped]
         public List<UserRole> UserRoles { get; set; }
     }

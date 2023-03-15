@@ -150,5 +150,18 @@ namespace Jt.SingleService.Data.Repositories.Impl
             DbSet.UpdateRange(entities);
             await Task.CompletedTask;
         }
+
+        public async Task UpdateFieldsAsync(T entity, Expression<Func<T, object>>[] propertyExpressions)
+        {
+            DbSet.Attach(entity);
+            if (propertyExpressions.Any())
+            {
+                foreach (var item in propertyExpressions)
+                {
+                    DbContext.Entry(entity).Property(item).IsModified = true;
+                }
+            }
+            await Task.CompletedTask;
+        }
     }
 }

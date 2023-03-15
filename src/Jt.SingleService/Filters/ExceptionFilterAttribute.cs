@@ -63,8 +63,8 @@ namespace Jt.SingleService.Core.Filters
                     {
                         Id = _snowflake.NextId().ToString(),
                         Type = (int)EnumLogType.ErrLog,
-                        Title = context.Exception.Message,
-                        Content = $"{msg}",
+                        Title = msg,
+                        Content = context.Exception.Message,
                         LogTime = DateTime.Now,
                         UserId = "",
                         Controller = caDes.ControllerName,

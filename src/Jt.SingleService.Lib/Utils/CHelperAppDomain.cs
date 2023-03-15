@@ -14,13 +14,13 @@ namespace Jt.SingleService.Lib.Utils
             return AppDomain.CurrentDomain.BaseDirectory;
         }
 
-        public static string CombineWithBaseDirectory(params string[] paths)
+        public static string CombineWithCreate(params string[] paths)
         {
             string path = GetBaseDirectory();
-            for (int i = 0; i < paths.Length; i++)
-            {
-                path = Path.Combine(GetBaseDirectory(), paths[i]);
-            }
+            paths = paths.Prepend(path).ToArray();
+            path = Path.Combine(paths);
+            FileInfo fileInfo = new FileInfo(path);
+            fileInfo.Directory.Create();
             return path;
         }
     }

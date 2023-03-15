@@ -14,6 +14,7 @@ using Jt.SingleService.Lib.Utils;
 using Jt.SingleService.Core.Options;
 using Microsoft.Extensions.Options;
 using Jt.SingleService.Lib.Extensions;
+using System.Linq.Expressions;
 
 namespace Jt.SingleService.Controllers
 {
@@ -248,6 +249,23 @@ namespace Jt.SingleService.Controllers
         {
             await _userRoleSvc.BindUserRoleAsync(userRoleDto);
             return Successed(true);
+        }
+
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("UpdateAvatar")]
+        [Action("修改", EnumActionType.AuthorizeAndLog)]
+        public async Task<ActionResult> UpdateAvatar([FromBody] User entity)
+        {
+            entity.UpTime = DateTime.Now;
+            entity.Updater = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
+            Expression<Func<User, object>>[] updatedProperties = {
+                    p => p.Avatar,
+                };
+            await _userSvc.UpdateFieldsAsync(entity, updatedProperties);
+            return Ok(ApiResponse<bool>.GetSucceed(true));
         }
     }
 }
