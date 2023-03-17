@@ -9,6 +9,7 @@ using NLog.Web;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using Microsoft.Extensions.FileProviders;
 
 namespace Jt.SingleService
 {
@@ -75,6 +76,14 @@ namespace Jt.SingleService
         public static async void Use(WebApplication app)
         {
             var appSetting = app.Configuration.GetSection("AppSettings").Get<AppSettings>();
+
+            app.UseStatusCodePages();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files")),
+                RequestPath = "/Files"
+            });
 
             app.UseGlobalException();
             app.UseRequestLog();

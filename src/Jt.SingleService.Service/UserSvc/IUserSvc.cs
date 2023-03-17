@@ -1,4 +1,5 @@
 using Jt.SingleService.Core.Models;
+using Jt.SingleService.Data.Dto;
 using Jt.SingleService.Data.Tables;
 
 namespace Jt.SingleService.Service.UserSvc
@@ -10,5 +11,7 @@ namespace Jt.SingleService.Service.UserSvc
         Task<bool> CheckUserNameExistsAsync(string userName);
 
         Task<ApiResponse<bool>> RegisterAsync(User user);
+
+        Task<GetUserInfoOutput> GetUserInfoAsync(string id);
     }
 }
