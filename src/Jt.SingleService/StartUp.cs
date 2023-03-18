@@ -82,6 +82,10 @@ namespace Jt.SingleService
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files")),
+                OnPrepareResponse = (c) =>
+                {
+                    c.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                },
                 RequestPath = "/Files"
             });
 
