@@ -1,8 +1,8 @@
 ﻿
 using Jt.SingleService.Core.Cache;
-using Jt.SingleService.Core.DI;
-using Jt.SingleService.Core.Tables;
-using Action = Jt.SingleService.Core.Tables.Action;
+using Jt.SingleService.Data.Tables;
+using Jt.SingleService.Lib.DI;
+using Action = Jt.SingleService.Data.Tables.Action;
 
 namespace Jt.SingleService.Service.MainSvc
 {

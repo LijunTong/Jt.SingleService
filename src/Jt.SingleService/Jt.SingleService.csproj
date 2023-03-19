@@ -28,9 +28,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Jt.SingleService.Core\Jt.SingleService.Core.csproj" />
-    <ProjectReference Include="..\Jt.SingleService.Data\Jt.SingleService.Data.csproj" />
     <ProjectReference Include="..\Jt.SingleService.Service\Jt.SingleService.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Files\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Files\logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

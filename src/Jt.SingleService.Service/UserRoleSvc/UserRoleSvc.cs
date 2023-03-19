@@ -1,18 +1,21 @@
-using Jt.SingleService.Core.DI;
-using Jt.SingleService.Core.Dto;
-using Jt.SingleService.Core.Repositories;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Dto;
+using Jt.SingleService.Data.Tables;
+using Jt.SingleService.Data.Repositories.Interface;
 using Jt.SingleService.Service.UserRoleSvc;
+using Jt.SingleService.Lib.DI;
+using Jt.SingleService.Lib.Utils;
 
 namespace Jt.SingleService.Service.UserSvc
 {
     public class UserRoleSvc : BaseSvc<UserRole>, IUserRoleSvc, ITransientInterface
     {
         private readonly IUserRoleRepo _repository;
+        private readonly CHelperSnowflake _snowflake;
 
-        public UserRoleSvc(IUserRoleRepo repository) : base(repository)
+        public UserRoleSvc(IUserRoleRepo repository, CHelperSnowflake snowflake) : base(repository)
         {
             _repository = repository;
+            _snowflake = snowflake;
         }
 
         public async Task BindUserRoleAsync(UserRoleDto userRoleDto)
@@ -25,6 +28,7 @@ namespace Jt.SingleService.Service.UserSvc
                 {
                     userRoles.Add(new UserRole
                     {
+                        Id = _snowflake.NextId().ToString(),
                         UserId = userRoleDto.UserId,
                         RoleId = x,
                         CreateTime = DateTime.Now,

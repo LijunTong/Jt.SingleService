@@ -1,11 +1,15 @@
-﻿using Jt.SingleService.Core.Extensions;
+﻿using Jt.SingleService.Lib.Extensions;
+using Jt.SingleService.Core.Filters;
 using Jt.SingleService.Core.Middlewares;
 using Jt.SingleService.Core.Options;
+using Jt.SingleService.Extensions;
 using LogDashboard;
+using Microsoft.Extensions.Options;
 using NLog.Web;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using Microsoft.Extensions.FileProviders;
 
 namespace Jt.SingleService
 {
@@ -26,10 +30,6 @@ namespace Jt.SingleService
             var config = builder.Configuration.GetSection(AppSettings.Position);
             var appSetting = config.Get<AppSettings>();
 
-            services.AddControllers();
-
-            services.AddSwaggerGen(appSetting);
-
             services.AddJsonSerializerOptions(options =>
             {
                 options.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
@@ -37,7 +37,26 @@ namespace Jt.SingleService
                 options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.AllowTrailingCommas = true;
                 options.PropertyNameCaseInsensitive = true;
+                options.Converters.Add(new DateTimeJsonConverter());
             });
+
+            services.AddControllers(e =>
+            {
+                e.Filters.Add<ExceptionFilterAttribute>();
+                e.Filters.Add<LogActionFilterAttribute>();
+            }).AddJsonOptions(option =>
+            {
+                option.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
+                option.JsonSerializerOptions.WriteIndented = true;
+                option.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                option.JsonSerializerOptions.AllowTrailingCommas = true;
+                option.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                option.JsonSerializerOptions.Converters.Add(new DateTimeJsonConverter());
+            });
+
+            services.AddSwaggerGen(appSetting);
+
+                                                                                                                                                                           
 
             services.AddLogDashboard();
 
@@ -46,15 +65,29 @@ namespace Jt.SingleService
 
             services.AddCustomService(config);
 
-            services.AddMysql(appSetting);
+            services.AddMysql();
 
             //解决跨域问题，添加允许访问的域
             services.AddCors("Domain");
+
+            services.AddQuartz(appSetting);
         }
 
-        public static void Use(WebApplication app)
+        public static async void Use(WebApplication app)
         {
             var appSetting = app.Configuration.GetSection("AppSettings").Get<AppSettings>();
+
+            app.UseStatusCodePages();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files")),
+                OnPrepareResponse = (c) =>
+                {
+                    c.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                },
+                RequestPath = "/Files"
+            });
 
             app.UseGlobalException();
             app.UseRequestLog();
@@ -71,6 +104,15 @@ namespace Jt.SingleService
             app.UseAuthorization();
 
             app.UseCors("Domain");//解决跨域问题，必须在UseRouting()和UseEndpoints()之间
+
+            try
+            {
+                await app.InitControllerAsync();
+            }
+            catch (Exception ex)
+            {
+                app.Logger.LogError(ex, $"Init Exception:{ex.Message}");
+            }
 
             app.MapDefaultControllerRoute();
         }

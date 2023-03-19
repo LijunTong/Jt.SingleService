@@ -1,10 +1,10 @@
-﻿using Jt.SingleService.Core.Tables;
+﻿using Jt.SingleService.Data.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Action = Jt.SingleService.Core.Tables.Action;
+using Action = Jt.SingleService.Data.Tables.Action;
 
 namespace Jt.SingleService.Service.MainSvc
 {

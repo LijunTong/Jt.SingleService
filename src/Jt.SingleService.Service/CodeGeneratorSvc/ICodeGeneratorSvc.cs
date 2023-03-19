@@ -1,6 +1,6 @@
-﻿using Jt.SingleService.Core.Dto;
-using Jt.SingleService.Core.Tables;
-using Jt.SingleService.Core.Tables.DatabaseEntity;
+﻿using Jt.SingleService.Data.Dto;
+using Jt.SingleService.Data.Tables;
+using Jt.SingleService.Data.Tables.DatabaseEntity;
 
 namespace Jt.SingleService.Service.CodeDbSvc
 {

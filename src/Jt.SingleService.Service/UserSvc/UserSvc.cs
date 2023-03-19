@@ -1,10 +1,12 @@
-using Jt.SingleService.Core.DI;
 using Jt.SingleService.Core.Enums;
 using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Repositories;
-using Jt.SingleService.Core.Tables;
-using Jt.SingleService.Core.Utils;
+using Jt.SingleService.Data.Tables;
+using Jt.SingleService.Lib.Utils;
+using Jt.SingleService.Data.Repositories.Interface;
 using Microsoft.EntityFrameworkCore.Storage;
+using Jt.SingleService.Lib.DI;
+using Jt.SingleService.Data.Dto;
+using Jt.SingleService.Lib.Extensions;
 
 namespace Jt.SingleService.Service.UserSvc
 {
@@ -68,6 +70,12 @@ namespace Jt.SingleService.Service.UserSvc
             }
 
             return ApiResponse<bool>.GetSucceed(true);
+        }
+
+        public async Task<GetUserInfoOutput> GetUserInfoAsync(string id)
+        {
+            var user = await _repository.GetByIdAsync(id);
+            return user.ObjValueCopy<User, GetUserInfoOutput>();
         }
     }
 }

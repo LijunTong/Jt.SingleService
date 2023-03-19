@@ -1,5 +1,5 @@
 ﻿using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Tables;
 using System.Linq.Expressions;
 
 namespace Jt.SingleService.Service
@@ -8,11 +8,11 @@ namespace Jt.SingleService.Service
     {
         Task<T> InsertAsync(T entity);
 
-        Task InsertListAsync(List<T> entity);
+        Task<bool> InsertListAsync(List<T> entity);
 
-        Task<int> UpdateAsync(T entity);
+        Task<bool> UpdateAsync(T entity);
 
-        Task<int> DeleteAsync(dynamic id);
+        Task<bool> DeleteAsync(dynamic id);
 
         Task<T> GetEntityByIdAsync(object id);
 
@@ -21,5 +21,7 @@ namespace Jt.SingleService.Service
         Task<List<T>> GetAllListAsync();
 
         Task<T> GetEntityAsync(Expression<Func<T, bool>> predicate);
+
+        Task<bool> UpdateFieldsAsync(T entity, Expression<Func<T, object>>[] propertyExpressions);
     }
 }

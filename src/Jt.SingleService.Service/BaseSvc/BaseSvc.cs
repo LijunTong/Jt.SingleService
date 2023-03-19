@@ -1,7 +1,7 @@
-﻿using Jt.SingleService.Core.DI;
+﻿using Jt.SingleService.Lib.DI;
 using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Repositories;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Repositories.Interface;
+using Jt.SingleService.Data.Tables;
 using System.Linq.Expressions;
 
 namespace Jt.SingleService.Service
@@ -15,10 +15,10 @@ namespace Jt.SingleService.Service
             _baseRepo = baseRepo;
         }
 
-        public async Task<int> DeleteAsync(dynamic id)
+        public async Task<bool> DeleteAsync(dynamic id)
         {
             await _baseRepo.DeleteAsync(id);
-            return await _baseRepo.SaveAsync();
+            return (await _baseRepo.SaveAsync()) >= 0;
         }
 
         public async Task<List<T>> GetAllListAsync()
@@ -49,16 +49,22 @@ namespace Jt.SingleService.Service
             return t;
         }
 
-        public async Task InsertListAsync(List<T> entities)
+        public async Task<bool> InsertListAsync(List<T> entities)
         {
             await _baseRepo.InsertListAsync(entities);
-            await _baseRepo.SaveAsync();
+            return (await _baseRepo.SaveAsync()) > 0;
         }
 
-        public async Task<int> UpdateAsync(T entity)
+        public async Task<bool> UpdateAsync(T entity)
         {
             await _baseRepo.UpdateAsync(entity);
-            return await _baseRepo.SaveAsync();
+            return (await _baseRepo.SaveAsync()) > 0;
+        }
+
+        public async Task<bool> UpdateFieldsAsync(T entity, Expression<Func<T, object>>[] propertyExpressions)
+        {
+            await _baseRepo.UpdateFieldsAsync(entity, propertyExpressions);
+            return (await _baseRepo.SaveAsync()) > 0;
         }
     }
 }

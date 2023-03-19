@@ -49,5 +49,20 @@ namespace Jt.SingleService.Core.Options
 
             public double RefreshTokenExpirationDays { get; set; }
         }
+
+        public QuartzInfo Quartz { get; set; }
+
+        public class QuartzInfo
+        {
+            public List<QuartzJob> Jobs { get; set; }
+        }
+
+        public class QuartzJob
+        {
+            public string JobName { get; set; }
+            public string Type { get; set; }
+            public string Cron { get; set; }
+            public bool Enable { get; set; }
+        }
     }
 }

@@ -1,6 +1,6 @@
 using Jt.SingleService.Core.Models;
 using Jt.SingleService.Core.Jwt;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Tables;
 using Jt.SingleService.Core.Attributes;
 using Jt.SingleService.Core.Enums;
 using Jt.SingleService.Service.UserSvc;
@@ -9,26 +9,31 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using Jt.SingleService.Service.UserRoleSvc;
 using Jt.SingleService.Service.RoleSvc;
-using Jt.SingleService.Core.Dto;
-using Jt.SingleService.Core.Utils;
+using Jt.SingleService.Data.Dto;
+using Jt.SingleService.Lib.Utils;
 using Jt.SingleService.Core.Options;
 using Microsoft.Extensions.Options;
+using Jt.SingleService.Lib.Extensions;
+using System.Linq.Expressions;
+using Jt.SingleService.Service.FileSvc;
 
 namespace Jt.SingleService.Controllers
 {
     [Route("User")]
+    [AuthorController]
     public class UserController : BaseController
     {
         private readonly IUserSvc _userSvc;
         private readonly JwtHelper _jwtHelper;
-         private readonly IUserRoleSvc _userRoleSvc;
-         private readonly IUserCacheSvc _userCacheSvc;
+        private readonly IUserRoleSvc _userRoleSvc;
+        private readonly IUserCacheSvc _userCacheSvc;
         private readonly IRoleSvc _roleSvc;
         private readonly AppSettings _appSettings;
+        private readonly IFileSvc _fileSvc;
 
 
         public UserController(IUserSvc service, JwtHelper jwtHelper, IUserRoleSvc userRoleSvc, IUserCacheSvc userCacheSvc,
-            IRoleSvc roleSvc, IOptionsMonitor<AppSettings> setting)
+            IRoleSvc roleSvc, IOptionsMonitor<AppSettings> setting, IFileSvc fileSvc)
         {
             _userSvc = service;
             _jwtHelper = jwtHelper;
@@ -36,6 +41,7 @@ namespace Jt.SingleService.Controllers
             _userCacheSvc = userCacheSvc;
             _roleSvc = roleSvc;
             _appSettings = setting.CurrentValue;
+            _fileSvc = fileSvc;
         }
 
         /// <summary>
@@ -86,6 +92,7 @@ namespace Jt.SingleService.Controllers
         public async Task<ActionResult> Get(string id)
         {
             var data = await _userSvc.GetEntityByIdAsync(id);
+            data.UserRoles = await _userRoleSvc.GetUserRolesAsync(id);
             return Ok(ApiResponse<User>.GetSucceed(data));
         }
 
@@ -131,7 +138,7 @@ namespace Jt.SingleService.Controllers
         public async Task<ActionResult> Register(UserDto user)
         {
 
-            var exists =await _userSvc.CheckUserNameExistsAsync(user.UserName);
+            var exists = await _userSvc.CheckUserNameExistsAsync(user.UserName);
             if (exists)
             {
                 return Fail("用户名已存在");
@@ -143,7 +150,7 @@ namespace Jt.SingleService.Controllers
                 RegisterTime = DateTime.Now,
                 Status = 0
             };
-            var result =  await _userSvc.RegisterAsync(registerUser);
+            var result = await _userSvc.RegisterAsync(registerUser);
             return Ok(result);
         }
 
@@ -171,7 +178,7 @@ namespace Jt.SingleService.Controllers
             {
                 Id = curUser.Id,
                 UserName = curUser.UserName,
-                Roles = roles
+                Roles = roles.JoinBySeparator(x => x.Id, ","),
             };
 
             string accessToken = await _jwtHelper.TokenAsync(userInfo);
@@ -192,7 +199,7 @@ namespace Jt.SingleService.Controllers
             {
                 return Successed(true);
             }
-          await  _userCacheSvc.RemoveRefreshTokenAsync(user.UserName);
+            await _userCacheSvc.RemoveRefreshTokenAsync(user.UserName);
             return Successed(true);
         }
 
@@ -201,7 +208,7 @@ namespace Jt.SingleService.Controllers
         public async Task<ActionResult> RefreshToken()
         {
             var user = await _jwtHelper.UserAsync<JwtUser>(GetToken());
-            if (user == null || ! (await _userCacheSvc.ExistsRefreshTokenAsync(user.UserName)))
+            if (user == null || !(await _userCacheSvc.ExistsRefreshTokenAsync(user.UserName)))
             {
                 return Ok(ApiResponse<bool>.GetFail(ApiReturnCode.UnAuth));
             }
@@ -214,7 +221,7 @@ namespace Jt.SingleService.Controllers
 
         public async Task<ActionResult> GetUserInfo(string userId)
         {
-            var curUser = await _userSvc.GetEntityByIdAsync(userId);
+            var curUser = await _userSvc.GetUserInfoAsync(userId);
             return Successed(curUser);
         }
 
@@ -245,6 +252,31 @@ namespace Jt.SingleService.Controllers
         {
             await _userRoleSvc.BindUserRoleAsync(userRoleDto);
             return Successed(true);
+        }
+
+        [HttpPost("UploadAvatar")]
+        public async Task<ActionResult> UploadAvatar(IFormFile file)
+        {
+            string userId = Guid.NewGuid().ToString().Substring(0, 6);
+            string path = await _fileSvc.UploadAvatarAsync(file, userId + "_" + file.FileName);
+            return Successed(path);
+        }
+
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("UpdateAvatar")]
+        [Action("修改", EnumActionType.AuthorizeAndLog)]
+        public async Task<ActionResult> UpdateAvatar(User entity)
+        {
+            entity.UpTime = DateTime.Now;
+            entity.Updater = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
+            Expression<Func<User, object>>[] updatedProperties = {
+                    p => p.Avatar,
+                };
+            await _userSvc.UpdateFieldsAsync(entity, updatedProperties);
+            return Ok(ApiResponse<bool>.GetSucceed(true));
         }
     }
 }

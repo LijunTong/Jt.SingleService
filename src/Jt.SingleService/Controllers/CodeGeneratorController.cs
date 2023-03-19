@@ -1,8 +1,8 @@
 ﻿using Jt.SingleService.Core.Attributes;
-using Jt.SingleService.Core.Dto;
+using Jt.SingleService.Data.Dto;
 using Jt.SingleService.Core.Enums;
 using Jt.SingleService.Core.Jwt;
-using Jt.SingleService.Core.Utils;
+using Jt.SingleService.Lib.Utils;
 using Jt.SingleService.Service.CodeDbSvc;
 using Jt.SingleService.Service.CodeGeneratorSvc;
 using Jt.SingleService.Service.CodeGenSchemeSvc;
@@ -108,7 +108,7 @@ namespace Jt.SingleService.Controllers
                 FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 FileStreamResult streamResult = new FileStreamResult(fileStream, new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream"));
                 streamResult.FileDownloadName = CHelperResSystem.GetFileName(filePath);
-                return Successed(streamResult);
+                return streamResult;
             });
         }
 

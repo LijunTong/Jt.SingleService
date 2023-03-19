@@ -1,5 +1,5 @@
-﻿using Jt.SingleService.Core.DI;
-using Jt.SingleService.Core.Options;
+﻿using Jt.SingleService.Core.Options;
+using Jt.SingleService.Lib.DI;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;

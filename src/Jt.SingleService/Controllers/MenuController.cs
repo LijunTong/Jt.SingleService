@@ -1,33 +1,36 @@
 using Jt.SingleService.Core.Models;
 using Jt.SingleService.Core.Jwt;
-using Jt.SingleService.Core.Tables;
+using Jt.SingleService.Data.Tables;
 using Jt.SingleService.Core.Attributes;
 using Jt.SingleService.Core.Enums;
 using Jt.SingleService.Service.MenuSvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using Jt.SingleService.Core.Utils;
+using Jt.SingleService.Lib.Utils;
 using Jt.SingleService.Service.ControllerSvc;
 using Jt.SingleService.Service.ActionSvc;
-using Jt.SingleService.Core.Dto;
+using Jt.SingleService.Data.Dto;
 
 namespace Jt.SingleService.Controllers
 {
     [Route("Menu")]
+    [AuthorController]
     public class MenuController : BaseController
     {
         private IMenuSvc _service;
         private JwtHelper _jwtHelper;
         private IControllerSvc _controllerSvc;
         private IActionSvc _actionSvc;
+        private readonly CHelperSnowflake _snowflake;
 
-        public MenuController(IMenuSvc service, JwtHelper jwtHelper, IControllerSvc controllerSvc, IActionSvc actionSvc)
+        public MenuController(IMenuSvc service, JwtHelper jwtHelper, IControllerSvc controllerSvc, IActionSvc actionSvc, CHelperSnowflake snowflake)
         {
             _service = service;
             _jwtHelper = jwtHelper;
             _controllerSvc = controllerSvc;
             _actionSvc = actionSvc;
+            _snowflake = snowflake;
         }
 
         /// <summary>
@@ -38,12 +41,15 @@ namespace Jt.SingleService.Controllers
         [Action("新增", EnumActionType.AuthorizeAndLog)]
         public async Task<ActionResult> Insert([FromBody] Menu entity)
         {
-            if (! await _service.IsExistsMenuAsync(entity))
+            if (await _service.IsExistsMenuAsync(entity))
             {
                 return Fail($"名称{entity.Name}已存在");
             }
+            entity.Id = _snowflake.NextId().ToString();
             entity.CreateTime = DateTime.Now;
             entity.Creater = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
+            entity.UpTime = DateTime.Now;
+            entity.Updater = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
             await _service.InsertAsync(entity);
             return Ok(ApiResponse<bool>.GetSucceed(true));
         }
@@ -56,7 +62,7 @@ namespace Jt.SingleService.Controllers
         [Action("修改", EnumActionType.AuthorizeAndLog)]
         public async Task<ActionResult> Update([FromBody] Menu entity)
         {
-            if (! await _service.IsExistsMenuAsync(entity))
+            if (await _service.IsExistsMenuAsync(entity))
             {
                 return Fail($"名称{entity.Name}已存在");
             }
@@ -171,7 +177,6 @@ namespace Jt.SingleService.Controllers
         {
           await  _controllerSvc.InitControllerAsync();
           await  _actionSvc.InitActionsAsync();
-          await  _actionSvc.LoadActionsRedisAsync();
             return Successed(true);
         }
 

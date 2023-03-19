@@ -1,5 +1,5 @@
 ﻿using Jt.SingleService.Core.Cache;
-using Jt.SingleService.Core.DI;
+using Jt.SingleService.Lib.DI;
 
 namespace Jt.SingleService.Service.CodeGeneratorSvc
 {
