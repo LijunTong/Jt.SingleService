@@ -82,7 +82,8 @@ namespace Jt.SingleService.Service.UserSvc
                 }
                 if (delActions.Any())
                 {
-                    await _repository.DeleteAsync(x => delActions.Where(o => o.Id == x.Id).Count() > 0);
+                    List<string> ids = delActions.Select(x => x.Id).ToList();
+                    await _repository.DeleteAsync(x => ids.Contains(x.Id));
                 }
                 await _repository.SaveAsync();
             }
