@@ -47,11 +47,10 @@ namespace Jt.SingleService.Service.UserSvc
             {
                 try
                 {
-                    string id = _snowflake.NextId().ToString();
                     List<CodeSchemeDetials> codeSchemeDetials = new List<CodeSchemeDetials>();
                     if (dto.CodeGenScheme.Id.IsNullOrWhiteSpace())
                     {
-                        dto.CodeGenScheme.Id = id;
+                        dto.CodeGenScheme.Id = _snowflake.NextId().ToString();
                         dto.CodeGenScheme.Creater = dto.UserId;
                         dto.CodeGenScheme.CreateTime = DateTime.Now;
                         dto.CodeGenScheme.Updater = dto.UserId;
@@ -73,7 +72,7 @@ namespace Jt.SingleService.Service.UserSvc
                         CodeSchemeDetials detials = new CodeSchemeDetials
                         {
                             Id = _snowflake.NextId().ToString(),
-                            GenSchemeId = id,
+                            GenSchemeId = dto.CodeGenScheme.Id,
                             TempId = temp.Id,
                             FileName = temp.FileName,
                             CreateTime = DateTime.Now,
@@ -84,7 +83,7 @@ namespace Jt.SingleService.Service.UserSvc
                         codeSchemeDetials.Add(detials);
                     }
                     await _schemeDetialsRepository.UseTransactionAsync(tran.GetDbTransaction());
-                    await _schemeDetialsRepository.DeleteAsync(x => x.GenSchemeId == id);
+                    await _schemeDetialsRepository.DeleteAsync(x => x.GenSchemeId == dto.CodeGenScheme.Id);
                     await _schemeDetialsRepository.InsertListAsync(codeSchemeDetials);
                     await _schemeDetialsRepository.SaveAsync();
                     tran.Commit();
