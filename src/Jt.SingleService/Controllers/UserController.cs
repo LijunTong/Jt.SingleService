@@ -205,7 +205,7 @@ namespace Jt.SingleService.Controllers
             var user = await _jwtHelper.UserAsync<JwtUser>(GetToken());
             if (user == null || !(await _userCacheSvc.ExistsRefreshTokenAsync(user.UserName)))
             {
-                return Ok(ApiResponse<bool>.GetFail(ApiReturnCode.UnAuth));
+                return Ok(ApiResponse<bool>.GetFail(ApiReturnCode.UnLogin, "请先登录"));
             }
             string accessToken = await _jwtHelper.TokenAsync(user);
             await _userCacheSvc.SetTokenAsync(user.UserName, accessToken, TimeSpan.FromMinutes(_appSettings.Jwt.TokenExpirationMins));

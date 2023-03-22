@@ -52,6 +52,9 @@ namespace Jt.SingleService
                 option.JsonSerializerOptions.AllowTrailingCommas = true;
                 option.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 option.JsonSerializerOptions.Converters.Add(new DateTimeJsonConverter());
+            }).AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
 
             services.AddSwaggerGen(appSetting);
