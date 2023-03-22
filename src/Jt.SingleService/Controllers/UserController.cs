@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Jt.SingleService.Lib.Extensions;
 using System.Linq.Expressions;
 using Jt.SingleService.Service.FileSvc;
+using Jt.SingleService.Data.Dto.User.Req;
 
 namespace Jt.SingleService.Controllers
 {
@@ -91,9 +92,8 @@ namespace Jt.SingleService.Controllers
         [HttpPost("Get")]
         public async Task<ActionResult> Get(string id)
         {
-            var data = await _userSvc.GetEntityByIdAsync(id);
-            data.UserRoles = await _userRoleSvc.GetUserRolesAsync(id);
-            return Ok(ApiResponse<User>.GetSucceed(data));
+            var data = await _userSvc.GetUserAsync(id);
+            return Ok(data);
         }
 
         /// <summary>
@@ -113,15 +113,10 @@ namespace Jt.SingleService.Controllers
         /// <returns></returns>
         [HttpPost("ListPager")]
         [Action("列表", EnumActionType.AuthorizeAndLog)]
-        public async Task<ActionResult> ListPager([FromQuery] PagerReq pagerReq)
+        public async Task<ActionResult> ListPager([FromQuery] GetPagerListReq pagerReq)
         {
-            var data = await _userSvc.GetPagerListAsync(pager: pagerReq);
-            PagerOutput pager = new PagerOutput()
-            {
-                Total = pagerReq.Total,
-                Data = data
-            };
-            return Ok(ApiResponse<PagerOutput>.GetSucceed(pager));
+            var data = await _userSvc.GetUserPagerAsync(pagerReq);
+            return Ok(data);
         }
 
         [HttpPost("CheckUserName")]
@@ -135,7 +130,7 @@ namespace Jt.SingleService.Controllers
         [HttpPost("Register")]
 
         [AllowAnonymous]
-        public async Task<ActionResult> Register(UserDto user)
+        public async Task<ActionResult> Register(UserLoginReq user)
         {
 
             var exists = await _userSvc.CheckUserNameExistsAsync(user.UserName);
@@ -157,7 +152,7 @@ namespace Jt.SingleService.Controllers
         [HttpPost("Login")]
 
         [AllowAnonymous]
-        public async Task<ActionResult> Login(UserDto user)
+        public async Task<ActionResult> Login(UserLoginReq user)
         {
             var exists = await _userSvc.CheckUserNameExistsAsync(user.UserName);
             if (!exists)

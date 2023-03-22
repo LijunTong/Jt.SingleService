@@ -16,5 +16,13 @@ namespace Jt.SingleService.Core.Models
 
         public object Data { get; set; }
 
+        public virtual (int Code, string Msg) Vaild()
+        {
+            if (Page <= 0)
+            {
+                return (ApiReturnCode.ParamError, "Page 应该大于0");
+            }
+            return (ApiReturnCode.Succeed, "");
+        }
     }
 }

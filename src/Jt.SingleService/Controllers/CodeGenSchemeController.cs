@@ -114,8 +114,8 @@ namespace Jt.SingleService.Controllers
         [HttpPost("GetSchemeDetials")]
         public async Task<ActionResult> GetSchemeDetials(string schemeId)
         {
-            var data = await _service.GetSchemeDetialsAsync(schemeId);
-            return Successed(data);
+            var data = await _service.GetCodeGenSchemeAsync(schemeId);
+            return Successed(data.CodeSchemeDetials);
         }
     }
 }

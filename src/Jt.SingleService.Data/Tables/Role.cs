@@ -21,7 +21,9 @@ namespace Jt.SingleService.Data.Tables
         public string Updater { get; set; }
         [Column("up_time")]
         public DateTime UpTime { get; set; }
-        [NotMapped]
+
         public List<RoleAction> RoleActions { get; set; }
+
+        public List<UserRole> UserRoles { get; set; }
     }
 }

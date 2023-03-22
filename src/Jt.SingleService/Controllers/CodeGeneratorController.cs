@@ -115,12 +115,12 @@ namespace Jt.SingleService.Controllers
         [HttpPost("GetSchemeDetials")]
         public async Task<ActionResult> GetSchemeDetials(string schemeId, string className, string tableName)
         {
-            var data = await _codeGenSchemeSvc.GetSchemeDetialsAsync(schemeId);
-            foreach (var item in data)
+            var data = await _codeGenSchemeSvc.GetCodeGenSchemeAsync(schemeId);
+            foreach (var item in data.CodeSchemeDetials)
             {
                 item.FileName = item.FileName.Replace("{ClassName}", className).Replace("{TableName}", tableName);
             }
-            return Successed(data);
+            return Successed(data.CodeSchemeDetials);
         }
 
         [HttpPost("GetDbProvider")]

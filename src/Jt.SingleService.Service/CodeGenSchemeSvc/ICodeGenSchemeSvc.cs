@@ -13,6 +13,8 @@ namespace Jt.SingleService.Service.CodeGenSchemeSvc
 
         Task<List<CodeGenScheme>> GetPageListByUserIdAsync(PagerReq pagerEntity, string userId);
 
-        Task<List<CodeSchemeDetialsDto>> GetSchemeDetialsAsync(string schemeId);
+        Task<List<CodeSchemeDetials>> GetSchemeDetialsAsync(string schemeId);
+
+        Task<CodeGenScheme> GetCodeGenSchemeAsync(string schemeId);
     }
 }

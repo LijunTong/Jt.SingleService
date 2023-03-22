@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jt.SingleService.Data.Dto
+namespace Jt.SingleService.Data.Dto.User.Req
 {
-    public class UserDto
+    public class UserLoginReq
     {
         public string UserName { get; set; }
 

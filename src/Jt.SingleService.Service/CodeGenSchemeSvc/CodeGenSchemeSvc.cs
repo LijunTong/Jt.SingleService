@@ -25,6 +25,11 @@ namespace Jt.SingleService.Service.UserSvc
             _snowflake = snowflake;
         }
 
+        public Task<CodeGenScheme> GetCodeGenSchemeAsync(string schemeId)
+        {
+            return _repository.GetCodeGenSchemeAsync(schemeId);
+        }
+
         public async Task<List<CodeGenScheme>> GetListByUserIdAsync(string userId)
         {
             return await _repository.GetListAsync(x => x.UserId == userId);
@@ -36,7 +41,7 @@ namespace Jt.SingleService.Service.UserSvc
 
         }
 
-        public async Task<List<CodeSchemeDetialsDto>> GetSchemeDetialsAsync(string schemeId)
+        public async Task<List<CodeSchemeDetials>> GetSchemeDetialsAsync(string schemeId)
         {
             return await _schemeDetialsRepository.GetSchemeDetialsAsync(schemeId);
         }

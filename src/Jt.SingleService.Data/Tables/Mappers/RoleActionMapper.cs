@@ -9,6 +9,11 @@ namespace Jt.SingleService.Data.Tables.Mappers
         public void Configure(EntityTypeBuilder<RoleAction> builder)
         {
             builder.HasKey(m => m.Id);
+
+            builder.HasOne(m => m.Role)
+                .WithMany(r => r.RoleActions)
+                .HasForeignKey(m => m.RoleId);
         }
     }
+    
 }

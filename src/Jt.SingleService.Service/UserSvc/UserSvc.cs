@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Jt.SingleService.Lib.DI;
 using Jt.SingleService.Data.Dto;
 using Jt.SingleService.Lib.Extensions;
+using Jt.SingleService.Data.Dto.User.Output;
+using Jt.SingleService.Data.Dto.User.Req;
 
 namespace Jt.SingleService.Service.UserSvc
 {
@@ -76,6 +78,25 @@ namespace Jt.SingleService.Service.UserSvc
         {
             var user = await _repository.GetByIdAsync(id);
             return user.ObjValueCopy<User, GetUserInfoOutput>();
+        }
+
+        public async Task<ApiResponse<GetPagerListOutput>> GetUserAsync(string id)
+        {
+            var user = await _repository.GetUserAsync(id);
+            GetPagerListOutput output = user.ObjValueCopy<User, GetPagerListOutput>();
+            return ApiResponse<GetPagerListOutput>.GetSucceed(output);
+        }
+
+        public async Task<ApiResponse<PagerOutput>> GetUserPagerAsync(GetPagerListReq req)
+        {
+            var users = await _repository.GetPagerListAsync(req);
+            List<GetPagerListOutput> listOutputs = users.ObjsValueCopy<User, GetPagerListOutput>();
+            PagerOutput pagerOutput = new PagerOutput
+            {
+                Total = req.Total,
+                Data = listOutputs
+            };
+            return ApiResponse<PagerOutput>.GetSucceed(pagerOutput);
         }
     }
 }

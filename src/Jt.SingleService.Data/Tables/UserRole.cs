@@ -25,5 +25,10 @@ namespace Jt.SingleService.Data.Tables
 
         [Column("up_time")]
         public DateTime UpTime { get; set; }
+
+
+        public User User { get; set; }
+
+        public Role Role { get; set; }
     }
 }

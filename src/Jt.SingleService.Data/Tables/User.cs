@@ -29,7 +29,6 @@ namespace Jt.SingleService.Data.Tables
         [Column("avatar")]
         public string Avatar { get; set; }
 
-        [NotMapped]
         public List<UserRole> UserRoles { get; set; }
     }
 }

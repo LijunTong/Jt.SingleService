@@ -9,6 +9,14 @@ namespace Jt.SingleService.Data.Tables.Mappers
         public void Configure(EntityTypeBuilder<CodeSchemeDetials> builder)
         {
             builder.HasKey(m => m.Id);
+
+            builder.HasOne(m => m.CodeTemp)
+                 .WithMany(x => x.CodeSchemeDetials)
+                 .HasForeignKey(x => x.TempId);
+
+            builder.HasOne(m => m.CodeGenScheme)
+                 .WithMany(x => x.CodeSchemeDetials)
+                 .HasForeignKey(x => x.GenSchemeId);
         }
     }
 }
