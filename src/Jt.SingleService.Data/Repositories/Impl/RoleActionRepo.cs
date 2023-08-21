@@ -1,13 +1,10 @@
-using Jt.SingleService.Data.DbContexts;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Repositories.Interface;
+using Jt.Common.Tool.DI;
 using MySqlConnector;
 using System.Data.Common;
-using Jt.SingleService.Lib.DI;
 
-namespace Jt.SingleService.Data.Repositories.Impl
+namespace Jt.SingleService.Data
 {
-    public class RoleActionRepo : BaseRepo<RoleAction>, IRoleActionRepo, ITransientInterface
+    public class RoleActionRepo : BaseRepo<RoleAction>, IRoleActionRepo, ITransientDIInterface
     {
         public RoleActionRepo(MysqlDbContext dbContext) : base(dbContext)
         {

@@ -1,20 +1,17 @@
-using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Data.Repositories.Dto;
-using Jt.SingleService.Data.Tables;
-
-namespace Jt.SingleService.Service.CodeGenSchemeSvc
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+namespace Jt.SingleService.Service
 {
     public interface ICodeGenSchemeSvc : IBaseSvc<CodeGenScheme>
     {
-        Task InsertSchemeAsync(CodeGenSchemeDto dto);
+        Task<ApiResponse<bool>> InsertSchemeAsync(CodeGenSchemeDto dto);
 
-        Task<List<CodeGenScheme>> GetListByUserIdAsync(string userId);
+        Task<ApiResponse<List<CodeGenScheme>>> GetListByUserIdAsync(string userId);
 
-        Task<List<CodeGenScheme>> GetPageListByUserIdAsync(PagerReq pagerEntity, string userId);
+        Task<ApiResponse<PagerOutput<CodeGenScheme>>> GetPageListByUserIdAsync(PagerReq pagerEntity, string userId);
 
-        Task<List<CodeSchemeDetials>> GetSchemeDetialsAsync(string schemeId);
+        Task<ApiResponse<List<CodeSchemeDetials>>> GetSchemeDetialsAsync(string schemeId);
 
-        Task<CodeGenScheme> GetCodeGenSchemeAsync(string schemeId);
+        Task<ApiResponse<CodeGenScheme>> GetCodeGenSchemeAsync(string schemeId);
     }
 }

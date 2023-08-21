@@ -1,13 +1,9 @@
-﻿using Jt.SingleService.Core.Models;
-using Jt.SingleService.Data.DbContexts;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Data.Tables;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data.Common;
 using System.Linq.Expressions;
 
-namespace Jt.SingleService.Data.Repositories.Impl
+namespace Jt.SingleService.Data
 {
     public class BaseRepo<T> : IBaseRepo<T> where T : BaseEntity, new()
     {
@@ -35,19 +31,34 @@ namespace Jt.SingleService.Data.Repositories.Impl
             return await DbContext.Database.UseTransactionAsync(dbTransaction);
         }
 
-        public async Task DeleteAsync(object id)
+        public async Task DeleteAsync(string id)
         {
             var entity = await DbSet.FindAsync(id);
-            DbSet.Remove(entity);
+            entity.UpTime = DateTime.Now;
+            entity.IsDel = 1;
+            DbSet.Update(entity);
         }
 
         public async Task DeleteAsync(Expression<Func<T, bool>> predicate)
         {
             var entity = await DbSet.Where(predicate).ToListAsync();
+            entity.ForEach(x => x.IsDel = 1);
+            DbSet.UpdateRange(entity);
+        }
+
+        public async Task RemoveAsync(string id)
+        {
+            var entity = await DbSet.FindAsync(id);
+            DbSet.Remove(entity);
+        }
+
+        public async Task RemoveAsync(Expression<Func<T, bool>> predicate)
+        {
+            var entity = await DbSet.Where(predicate).ToListAsync();
             DbSet.RemoveRange(entity);
         }
 
-        public async Task<T> GetByIdAsync(object id)
+        public async Task<T> GetByIdAsync(string id)
         {
             return await DbSet.FindAsync(id);
         }
@@ -163,5 +174,7 @@ namespace Jt.SingleService.Data.Repositories.Impl
             }
             await Task.CompletedTask;
         }
+
+        protected Expression<Func<T, bool>> DefaultWhere => x => true;
     }
 }

@@ -1,9 +1,8 @@
-﻿using Jt.SingleService.Core.Cache;
-using System;
+﻿using Jt.SingleService.Core;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public interface IUserCacheSvc: IBaseCacheSvc
+    public interface IUserCacheSvc : IBaseCacheSvc
     {
         //RefreshToken
         Task SetRefreshTokenAsync(string userName, string refreshToken, TimeSpan expiresIn);

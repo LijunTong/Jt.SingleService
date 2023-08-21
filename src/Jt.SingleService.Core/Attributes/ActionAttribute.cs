@@ -1,12 +1,6 @@
-﻿using Jt.SingleService.Core.Enums;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Jt.SingleService.Core.Attributes
+namespace Jt.SingleService.Core
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class ActionAttribute : Attribute, IFilterMetadata

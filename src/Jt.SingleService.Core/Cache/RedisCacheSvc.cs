@@ -1,16 +1,14 @@
-﻿using Jt.SingleService.Core.Options;
-using Jt.SingleService.Lib.DI;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
+﻿using Jt.Common.Tool.DI;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Text.Json;
 
-namespace Jt.SingleService.Core.Cache
+namespace Jt.SingleService.Core
 {
     /// <summary>
     /// Redis缓存操作
     /// </summary>
-    public class RedisCacheSvc : ICacheSvc, ISingletonInterface
+    public class RedisCacheSvc : ICacheSvc, ISingletonDIInterface
     {
         /// <summary>
         /// IDatabase
@@ -266,7 +264,7 @@ namespace Jt.SingleService.Core.Cache
                 var server = _connection.GetServer(ep);
                 var keys = server.Keys(pattern: "*" + pattern + "*", database: _cache.Database);
                 foreach (var key in keys)
-                   await _cache.KeyDeleteAsync(key);
+                    await _cache.KeyDeleteAsync(key);
             }
         }
 

@@ -1,12 +1,7 @@
-﻿using Jt.SingleService.Core.Attributes;
-using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Core.Enums;
-using Jt.SingleService.Core.Jwt;
-using Jt.SingleService.Lib.Utils;
-using Jt.SingleService.Service.CodeDbSvc;
-using Jt.SingleService.Service.CodeGeneratorSvc;
-using Jt.SingleService.Service.CodeGenSchemeSvc;
-using Jt.SingleService.Service.CodeTempSvc;
+﻿using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.SingleService.Service;
+using Jt.Common.Tool.Helper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jt.SingleService.Controllers
@@ -19,23 +14,21 @@ namespace Jt.SingleService.Controllers
         private readonly ICodeGeneratorCacheSvc _codeGeneratorCacheSvc;
         private readonly ICodeTempSvc _codeTempSvc;
         private readonly ICodeGenSchemeSvc _codeGenSchemeSvc;
-        private JwtHelper _jwtHelper;
         private readonly string _fileDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CodeTemp");
 
-        public CodeGeneratorController(ICodeGeneratorSvc codeGeneratorService, ICodeGeneratorCacheSvc codeGeneratorCache, ICodeTempSvc codeTempService, ICodeGenSchemeSvc codeGenSchemeService, JwtHelper jwtHelper)
+        public CodeGeneratorController(ICodeGeneratorSvc codeGeneratorService, ICodeGeneratorCacheSvc codeGeneratorCache, ICodeTempSvc codeTempService, ICodeGenSchemeSvc codeGenSchemeService, JwtHelper jwtHelper) : base(jwtHelper)
         {
             _codeGeneratorSvc = codeGeneratorService;
             _codeGeneratorCacheSvc = codeGeneratorCache;
             _codeTempSvc = codeTempService;
             _codeGenSchemeSvc = codeGenSchemeService;
-            _jwtHelper = jwtHelper;
         }
 
         [HttpPost("SetDb")]
         [Action("连接", EnumActionType.AuthorizeAndLog)]
         public async Task<ActionResult> SetDb(string dbType, string connectString)
         {
-            var user = await _jwtHelper.UserAsync<JwtUser>(GetToken());
+            var user = GetUser();
             await _codeGeneratorCacheSvc.SetDbTypeAsync(user.UserName, dbType, TimeSpan.FromDays(1));
             await _codeGeneratorCacheSvc.SetDbConnectStrAsync(user.UserName, connectString, TimeSpan.FromDays(1));
             return Successed(true);
@@ -48,7 +41,7 @@ namespace Jt.SingleService.Controllers
             try
             {
                 var data = await _codeGeneratorSvc.GetDataBasesAsync();
-                return Successed(data);
+                return Ok(data);
             }
             catch (Exception ex)
             {
@@ -63,7 +56,7 @@ namespace Jt.SingleService.Controllers
             try
             {
                 var data = await _codeGeneratorSvc.GetTableNamesAsync(dbName);
-                return Successed(data);
+                return Ok(data);
             }
             catch (Exception ex)
             {
@@ -76,7 +69,7 @@ namespace Jt.SingleService.Controllers
         {
             await SetDbTypeAsync();
             var data = await _codeGeneratorSvc.GetDbFieldsAsync(dbName, tableName);
-            var result = new { ClassName = CHelperName.ToPascal(tableName), DbFields = data };
+            var result = new { ClassName = NamedHelper.ToPascal(tableName), DbFields = data.Data };
             return Successed(result);
         }
 
@@ -89,9 +82,9 @@ namespace Jt.SingleService.Controllers
             var codeTemps = await _codeTempSvc.GetCodeTempsBySchemeAsync(codeTempParams.CodeSchemeId);
             try
             {
-                string data = await _codeGeneratorSvc.CodeGenerateAsync(codeTemps, codeTempParams, _fileDir);
-                Console.WriteLine(data);
-                return Successed(CHelperResSystem.GetFileName(data));
+                var data = await _codeGeneratorSvc.CodeGenerateAsync(codeTemps.Data, codeTempParams, _fileDir);
+                Console.WriteLine(data.Data);
+                return Successed(ResSystemHelper.GetFileName(data.Data));
             }
             catch (Exception ex)
             {
@@ -107,7 +100,7 @@ namespace Jt.SingleService.Controllers
                 string filePath = Path.Combine(_fileDir, codeFileName);
                 FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 FileStreamResult streamResult = new FileStreamResult(fileStream, new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream"));
-                streamResult.FileDownloadName = CHelperResSystem.GetFileName(filePath);
+                streamResult.FileDownloadName = ResSystemHelper.GetFileName(filePath);
                 return streamResult;
             });
         }
@@ -116,25 +109,29 @@ namespace Jt.SingleService.Controllers
         public async Task<ActionResult> GetSchemeDetials(string schemeId, string className, string tableName)
         {
             var data = await _codeGenSchemeSvc.GetCodeGenSchemeAsync(schemeId);
-            foreach (var item in data.CodeSchemeDetials)
+            if (data.Code == ApiReturnCode.Succeed)
             {
-                item.FileName = item.FileName.Replace("{ClassName}", className).Replace("{TableName}", tableName);
+                foreach (var item in data.Data.CodeSchemeDetials)
+                {
+                    item.FileName = item.FileName.Replace("{ClassName}", className).Replace("{TableName}", tableName);
+                }
             }
-            return Successed(data.CodeSchemeDetials);
+            
+            return Ok(data);
         }
 
         [HttpPost("GetDbProvider")]
         public async Task<ActionResult> GetDbProvider()
         {
             await Task.CompletedTask;
-            var data = CHelperEnum.GetEnumItem(typeof(EnumDbProvider));
+            var data = EnumHelper.GetEnumItem(typeof(EnumDbProvider));
             return Successed(data);
         }
 
         [NonAction]
         private async Task SetDbTypeAsync()
         {
-            var user = await _jwtHelper.UserAsync<JwtUser>(GetToken());
+            var user = GetUser();
             await _codeGeneratorSvc.SetDbTypeAsync(await _codeGeneratorCacheSvc.GetDbTypeAsync(user.UserName), await _codeGeneratorCacheSvc.GetDbConnectStrAsync(user.UserName));
         }
     }

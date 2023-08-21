@@ -1,22 +1,15 @@
-﻿using Jt.SingleService.Data.DbContexts;
-using Jt.SingleService.Lib.Extensions;
-using Jt.SingleService.Core.Jwt;
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Options;
-using Jt.SingleService.Core.Swagger;
+﻿using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.Extension;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Quartz;
 using Swashbuckle.AspNetCore.Filters;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using Jt.SingleService.Lib.DI;
-using Jt.SingleService.Core.Quartz;
-using Quartz.Spi;
-using Quartz;
 
 namespace Jt.SingleService.Extensions
 {
@@ -31,57 +24,9 @@ namespace Jt.SingleService.Extensions
         {
             services.Configure<AppSettings>(configuration);
 
-            services.RegisterLifetimesByInhreit(typeof(IScopedInterface));
-            services.RegisterLifetimesByInhreit(typeof(ITransientInterface));
-            services.RegisterLifetimesByInhreit(typeof(ISingletonInterface));
+            services.AddServiceByJtDIInterface();
 
             return services;
-        }
-
-        private static void RegisterLifetimesByInhreit(this IServiceCollection services, Type lifetimeType)
-        {
-            List<Type> types = AppDomain.CurrentDomain
-                                .GetAssemblies()
-                                .SelectMany(x => x.GetTypes())
-                                .Where(x => lifetimeType.IsAssignableFrom(x) && x.IsClass && !x.IsAbstract)
-                                .ToList();
-            foreach (Type type in types)
-            {
-                var interfaces = type.GetInterfaces().Where(x=> x != lifetimeType ).ToList();
-                if (interfaces.Count > 0)
-                {
-                    foreach (var item in interfaces)
-                    {
-                        if (lifetimeType == typeof(ISingletonInterface))
-                        {
-                            services.AddSingleton(item, type);
-                        }
-                        else if (lifetimeType == typeof(IScopedInterface))
-                        {
-                            services.AddScoped(item, type);
-                        }
-                        else if (lifetimeType == typeof(ITransientInterface))
-                        {
-                            services.AddTransient(item, type);
-                        }
-                    }
-                }
-                else
-                {
-                    if (lifetimeType == typeof(ISingletonInterface))
-                    {
-                        services.AddSingleton(type);
-                    }
-                    else if (lifetimeType == typeof(IScopedInterface))
-                    {
-                        services.AddScoped(type);
-                    }
-                    else if (lifetimeType == typeof(ITransientInterface))
-                    {
-                        services.AddTransient(type);
-                    }
-                }
-            }
         }
 
         public static IServiceCollection AddSwaggerGen(this IServiceCollection services, AppSettings appSettings)
@@ -148,7 +93,7 @@ namespace Jt.SingleService.Extensions
                             OnChallenge = async context =>
                             {
                                 context.HandleResponse();
-                                var result = ApiResponse<string>.GetFail(ApiReturnCode.UnAuth, "令牌过期").ToJosn();
+                                var result = ApiResponse<object>.Fail(ApiReturnCode.UnAuth, "令牌过期").ToJson();
                                 context.Response.ContentType = "application/json";
                                 context.Response.Headers.Add("Access-Control-Allow-Origin", "*"); //解决跨域，因为没走管道
                                 context.Response.StatusCode = StatusCodes.Status200OK;
@@ -156,7 +101,7 @@ namespace Jt.SingleService.Extensions
                             },
                             OnForbidden = async context =>
                             {
-                                var result = ApiResponse<string>.GetFail(ApiReturnCode.Forbidden, "没有权限").ToJosn();
+                                var result = ApiResponse<object>.Fail(ApiReturnCode.Forbidden, "没有权限").ToJson();
                                 context.Response.ContentType = "application/json";
                                 context.Response.Headers.Add("Access-Control-Allow-Origin", "*");//解决跨域，因为没走管道
                                 context.Response.StatusCode = StatusCodes.Status200OK;

@@ -1,13 +1,12 @@
-using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Data.Tables;
-
-namespace Jt.SingleService.Service.RoleActionSvc
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+namespace Jt.SingleService.Service
 {
     public interface IRoleActionSvc : IBaseSvc<RoleAction>
     {
         Task BindRoleActionsAsync(RoleActionDto roleActionDto);
 
-        Task<List<RoleAction>> GetRoleActionsAsync(string roleId);
+        Task<ApiResponse<List<RoleAction>>> GetRoleActionsAsync(string roleId);
 
         Task LoadRoleActionsRedisAsync();
     }

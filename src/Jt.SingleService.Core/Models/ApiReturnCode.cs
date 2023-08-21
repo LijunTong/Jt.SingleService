@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Jt.SingleService.Core.Models
+﻿namespace Jt.SingleService.Core
 {
     public class ApiReturnCode
     {
@@ -17,6 +11,7 @@ namespace Jt.SingleService.Core.Models
         public static int UnAuth => 1401;
 
         public static int UnLogin => 1402;
+
 
         public static int Forbidden => 1403;
 

@@ -1,4 +1,4 @@
-﻿namespace Jt.SingleService.Core.Jwt
+﻿namespace Jt.SingleService.Core
 {
     public class JwtUser
     {

@@ -1,11 +1,7 @@
-﻿using Jt.SingleService.Lib.Extensions;
-using Jt.SingleService.Core.Models;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using Jt.SingleService.Core;
+using Jt.Common.Tool.Extension;
 
-namespace Jt.SingleService.Core.Middlewares
+namespace Jt.SingleService
 {
     public class GlobalExceptionMiddleware
     {
@@ -27,10 +23,10 @@ namespace Jt.SingleService.Core.Middlewares
             catch (Exception ex)
             {
                 _logger.LogError(ex, "捕获全局异常");
-                var result = ApiResponse<string>.GetFail(ApiReturnCode.SystemError, "请求异常");
+                var result = ApiResponse<object>.Fail(ApiReturnCode.SystemError, "请求异常");
                 httpContext.Response.StatusCode = 200;
                 httpContext.Response.ContentType = "text/json;charset=utf-8;";
-                string error = result.ToJosn();
+                string error = result.ToJson();
                 await httpContext.Response.WriteAsync(error);
             }
         }

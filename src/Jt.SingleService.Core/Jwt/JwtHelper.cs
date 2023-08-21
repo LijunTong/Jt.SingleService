@@ -1,21 +1,16 @@
-﻿using Jt.SingleService.Lib.Extensions;
-using Jt.SingleService.Core.Options;
+﻿using Jt.Common.Tool.DI;
+using Jt.Common.Tool.Extension;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using Jt.SingleService.Lib.DI;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-namespace Jt.SingleService.Core.Jwt
+namespace Jt.SingleService.Core
 {
-    public class JwtHelper : ISingletonInterface
+    public class JwtHelper : ISingletonDIInterface
     {
         private readonly AppSettings _settings;
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
@@ -43,36 +38,8 @@ namespace Jt.SingleService.Core.Jwt
             return _jwtSecurityTokenHandler.WriteToken(token);
         }
 
-        public async Task<T> UserAsync<T>(string token)
+        public T User<T>(string token)
         {
-            await Task.CompletedTask;
-            if (token.IsNullOrWhiteSpace())
-            {
-                return default;
-            }
-            Type t = typeof(T);
-            T user = (T)Activator.CreateInstance(t);
-            var jwt = _jwtSecurityTokenHandler.ReadJwtToken(token);
-            foreach (var item in jwt.Claims)
-            {
-                var prop = t.GetProperty(item.Type);
-                if(prop != null) 
-                {
-                    prop.SetValue(user, item.Value);
-                }
-            }
-            return user;
-        }
-
-        public async Task<T> UserAsync<T>(HttpRequest request)
-        {
-            string authorization = request.Headers["Authorization"];
-            if (authorization == null)
-            {
-                return default;
-            }
-            string token = authorization.Replace(JwtBearerDefaults.AuthenticationScheme, "").Replace(" ", "");
-            
             if (token.IsNullOrWhiteSpace())
             {
                 return default;
@@ -88,8 +55,18 @@ namespace Jt.SingleService.Core.Jwt
                     prop.SetValue(user, item.Value);
                 }
             }
-            await Task.CompletedTask;
             return user;
+        }
+
+        public T User<T>(HttpRequest request)
+        {
+            string authorization = request.Headers["Authorization"];
+            if (authorization == null)
+            {
+                return default;
+            }
+            string token = authorization.Replace(JwtBearerDefaults.AuthenticationScheme, "").Replace(" ", "");
+            return User<T>(token);
         }
 
         private List<Claim> GetClaims<T>(T user)

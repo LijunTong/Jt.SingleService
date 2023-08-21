@@ -1,9 +1,7 @@
-﻿using Jt.SingleService.Service.SysLogSvc;
-using Jt.SingleService.Service.UserSvc;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Quartz;
 
-namespace Jt.SingleService.Service.SysLogSvc
+namespace Jt.SingleService.Service
 {
     public class SysLogJob : IJob
     {
@@ -30,7 +28,7 @@ namespace Jt.SingleService.Service.SysLogSvc
                     for (int i = 0; i < pages; i++)
                     {
                         var log = logs.Skip(i * pageSize).Take(pageSize).ToList();
-                       await _sysLogSvc.InsertListAsync(logs);
+                        await _sysLogSvc.InsertListAsync(logs);
                     }
                     _logger.LogInformation($"SysLogJob:保存系统日志{logs.Count}条");
                 }

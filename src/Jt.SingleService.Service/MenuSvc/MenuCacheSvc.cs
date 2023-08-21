@@ -1,9 +1,9 @@
-﻿using Jt.SingleService.Core.Cache;
-using Jt.SingleService.Lib.DI;
+﻿using Jt.SingleService.Core;
+using Jt.Common.Tool.DI;
 
-namespace Jt.SingleService.Service.MenuSvc
+namespace Jt.SingleService.Service
 {
-    public class MenuCacheSvc : IMenuCacheSvc, ITransientInterface
+    public class MenuCacheSvc : IMenuCacheSvc, ITransientDIInterface
     {
         private readonly string KeyController = "KeyController";
         private ICacheSvc _cacheSvc;

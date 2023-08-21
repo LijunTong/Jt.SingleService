@@ -1,22 +1,20 @@
-﻿using Jt.SingleService.Core.Attributes;
-using Jt.SingleService.Core.Enums;
-using Jt.SingleService.Core.Jwt;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Lib.Utils;
-using Jt.SingleService.Service.UserSvc;
+﻿using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.SingleService.Service;
+using Jt.Common.Tool.Extension;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Jt.SingleService.Core.Filters
+namespace Jt.SingleService
 {
     public class LogActionFilterAttribute : Attribute, IActionFilter
     {
         private ILogger<LogActionFilterAttribute> _logger;
         private ISysLogCacheSvc _sysLogCacheSvc;
         private JwtHelper _jwtHelper;
-        private readonly CHelperSnowflake _snowflake;
+        private readonly IIDSvc _snowflake;
 
-        public LogActionFilterAttribute(ILogger<LogActionFilterAttribute> logger, ISysLogCacheSvc sysLogCacheService, JwtHelper jwtService, CHelperSnowflake snowflake)
+        public LogActionFilterAttribute(ILogger<LogActionFilterAttribute> logger, ISysLogCacheSvc sysLogCacheService, JwtHelper jwtService, IIDSvc snowflake)
         {
             _logger = logger;
             _sysLogCacheSvc = sysLogCacheService;
@@ -26,7 +24,7 @@ namespace Jt.SingleService.Core.Filters
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            
+
         }
 
         public async void OnActionExecuting(ActionExecutingContext context)
@@ -42,13 +40,13 @@ namespace Jt.SingleService.Core.Filters
                 }
                 string address = context.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
                 //记录日志
-                string param = CHelperJson.SerializeObject(context.ActionArguments);
+                string param = context.ActionArguments.ToJson();
                 if (param.Length > 2000)
                 {
                     param = param.Substring(0, 2000);
                 }
                 string userId = "";
-                var user = await _jwtHelper.UserAsync<JwtUser>(context.HttpContext.Request);
+                var user = _jwtHelper.User<JwtUser>(context.HttpContext.Request);
                 if (user != null)
                 {
                     userId = user.Id;

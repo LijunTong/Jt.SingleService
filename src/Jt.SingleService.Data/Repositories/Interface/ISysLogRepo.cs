@@ -1,7 +1,4 @@
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Dto;
-
-namespace Jt.SingleService.Data.Repositories.Interface
+namespace Jt.SingleService.Data
 {
     public interface ISysLogRepo : IBaseRepo<SysLog>
     {

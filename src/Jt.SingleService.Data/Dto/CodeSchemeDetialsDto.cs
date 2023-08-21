@@ -1,11 +1,4 @@
-﻿using Jt.SingleService.Data.Tables;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Jt.SingleService.Data.Repositories.Dto
+﻿namespace Jt.SingleService.Data
 {
     public class CodeSchemeDetialsDto : CodeSchemeDetials
     {

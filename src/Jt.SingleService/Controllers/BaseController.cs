@@ -1,7 +1,6 @@
-﻿using Jt.SingleService.Core.Models;
+﻿using Jt.SingleService.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jt.SingleService.Controllers
@@ -10,11 +9,18 @@ namespace Jt.SingleService.Controllers
     [Authorize("Default")]
     public class BaseController : ControllerBase
     {
+        protected readonly JwtHelper _jwtHelper;
+
+        public BaseController(JwtHelper jwtHelper)
+        {
+            _jwtHelper = jwtHelper;
+        }
+
         [NonAction]
         protected string GetToken()
         {
             string authorization = HttpContext.Request.Headers["Authorization"];
-            if(authorization != null)
+            if (authorization != null)
             {
                 string token = authorization.Replace(JwtBearerDefaults.AuthenticationScheme, "").Replace(" ", "");
                 return token;
@@ -22,14 +28,20 @@ namespace Jt.SingleService.Controllers
             return null;
         }
 
+        [NonAction]
+        protected JwtUser GetUser()
+        {
+            return _jwtHelper.User<JwtUser>(GetToken());
+        }
+
         protected ActionResult Successed<T>(T t)
         {
-            return Ok(ApiResponse<T>.GetSucceed(t));
+            return Ok(ApiResponse<object>.Succeed(t));
         }
 
         protected ActionResult Fail(string msg)
         {
-            return Ok(ApiResponse<string>.GetFail(ApiReturnCode.OperationFail, msg));
+            return Ok(ApiResponse<object>.Fail(ApiReturnCode.OperationFail, msg));
         }
     }
 }

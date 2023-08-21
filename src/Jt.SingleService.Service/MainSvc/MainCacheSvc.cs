@@ -1,12 +1,10 @@
-﻿
-using Jt.SingleService.Core.Cache;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Lib.DI;
-using Action = Jt.SingleService.Data.Tables.Action;
-
-namespace Jt.SingleService.Service.MainSvc
+﻿using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
+using Action = Jt.SingleService.Data.Action;
+namespace Jt.SingleService.Service
 {
-    public class MainCacheSvc : IMainCacheSvc, ITransientInterface
+    public class MainCacheSvc : IMainCacheSvc, ITransientDIInterface
     {
         private ICacheSvc _cacheSvc;
         private readonly string KeyRoleAction = "KeyRoleAction";
@@ -22,9 +20,11 @@ namespace Jt.SingleService.Service.MainSvc
         {
             await _cacheSvc.AddAsync(KeyRoleAction, roleActions);
         }
-        public Task<List<RoleAction>> GetRoleActionsAsync()
+
+        public async Task<ApiResponse<List<RoleAction>>> GetRoleActionsAsync()
         {
-            return _cacheSvc.GetAsync<List<RoleAction>>(KeyRoleAction);
+            var data = await _cacheSvc.GetAsync<List<RoleAction>>(KeyRoleAction);
+            return ApiResponse<List<RoleAction>>.Succeed(data);
         }
 
         public async Task SetActionsAsync(List<Action> actions)
@@ -32,9 +32,10 @@ namespace Jt.SingleService.Service.MainSvc
             await _cacheSvc.AddAsync(KeyAction, actions);
         }
 
-        public Task<List<Action>> GetActionsAsync()
+        public async Task<ApiResponse<List<Action>>> GetActionsAsync()
         {
-            return _cacheSvc.GetAsync<List<Action>>(KeyAction);
+            var data = await _cacheSvc.GetAsync<List<Action>>(KeyAction);
+            return ApiResponse<List<Action>>.Succeed(data);
         }
 
     }

@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <DocumentationFile></DocumentationFile>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,17 +24,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LogDashboard" Version="1.4.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.14" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
 	<PackageReference Include="NLog.Web.AspNetCore" Version="5.2.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Jt.SingleService.Service\Jt.SingleService.Service.csproj" />
+    <Folder Include="Files\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Files\" />
+    <ProjectReference Include="..\Jt.SingleService.Core\Jt.SingleService.Core.csproj" />
+    <ProjectReference Include="..\Jt.SingleService.Lib\Jt.SingleService.Lib.csproj" />
+    <ProjectReference Include="..\Jt.SingleService.Service\Jt.SingleService.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

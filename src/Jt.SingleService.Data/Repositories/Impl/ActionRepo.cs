@@ -1,11 +1,7 @@
-using Jt.SingleService.Data.DbContexts;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Lib.DI;
-using Action = Jt.SingleService.Data.Tables.Action;
-
-namespace Jt.SingleService.Data.Repositories.Impl
+using Jt.Common.Tool.DI;
+namespace Jt.SingleService.Data
 {
-    public class ActionRepo : BaseRepo<Action>, IActionRepo, ITransientInterface
+    public class ActionRepo : BaseRepo<Action>, IActionRepo, ITransientDIInterface
     {
         public ActionRepo(MysqlDbContext dbContext) : base(dbContext)
         {

@@ -1,12 +1,9 @@
-﻿using Jt.SingleService.Data.DbContexts;
+﻿using Jt.SingleService.Core;
 using Jt.SingleService.Lib.Extensions;
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Data.Tables.DatabaseEntity;
-using Jt.SingleService.Lib.Utils;
-using Jt.SingleService.Data.Repositories.Interface;
+using Jt.Common.Tool.Helper;
 using Microsoft.EntityFrameworkCore;
 
-namespace Jt.SingleService.Data.Repositories.Impl.DbExtracts
+namespace Jt.SingleService.Data
 {
     public class MysqlDbExtractRepo : IDbExtractRepo
     {
@@ -44,8 +41,8 @@ namespace Jt.SingleService.Data.Repositories.Impl.DbExtracts
             var data = await GetAsync<DbFieldInfo>(sql);
             foreach (var item in data)
             {
-                item.FieldModelName = CHelperName.ToPascal(item.FieldName);
-                item.FieldModelNameCamel = CHelperName.ToCamelCase(item.FieldName);
+                item.FieldModelName = NamedHelper.ToPascal(item.FieldName);
+                item.FieldModelNameCamel = NamedHelper.ToCamelCase(item.FieldName);
                 item.FieldModelType = Constrant.DicMysqlFieldMap[item.FieldDbType];
             }
             return data;

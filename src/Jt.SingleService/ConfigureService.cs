@@ -1,19 +1,17 @@
-﻿using Jt.SingleService.Lib.Extensions;
-using Jt.SingleService.Core.Filters;
-using Jt.SingleService.Core.Middlewares;
-using Jt.SingleService.Core.Options;
+﻿using Jt.SingleService.Core;
 using Jt.SingleService.Extensions;
-using LogDashboard;
-using Microsoft.Extensions.Options;
+using Jt.Common.Tool.Extension;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using NLog.Web;
+using System.Net.Mime;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
-using Microsoft.Extensions.FileProviders;
 
 namespace Jt.SingleService
 {
-    public class StartUp
+    public class ConfigureService
     {
         public static void AddServices(WebApplicationBuilder builder)
         {
@@ -44,24 +42,37 @@ namespace Jt.SingleService
             {
                 e.Filters.Add<ExceptionFilterAttribute>();
                 e.Filters.Add<LogActionFilterAttribute>();
-            }).AddJsonOptions(option =>
+            }).ConfigureApiBehaviorOptions(options =>
             {
-                option.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
-                option.JsonSerializerOptions.WriteIndented = true;
-                option.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                option.JsonSerializerOptions.AllowTrailingCommas = true;
-                option.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                option.JsonSerializerOptions.Converters.Add(new DateTimeJsonConverter());
+                // 自定义模型校验返回
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    // 创建项目定义的统一的返回结构ApiResponse<object>
+
+                    string error = "";
+                    foreach (var item in context.ModelState)
+                    {
+                        error = item.Value?.Errors[0]?.ErrorMessage;
+                        break;
+                    }
+                    if (error.IsNullOrWhiteSpace())
+                    {
+                        error = "请求参数有误";
+                    }
+                    var apiResult = ApiResponse<object>.ParamError(error);
+                    var result = new ObjectResult(apiResult);
+                    result.StatusCode = StatusCodes.Status200OK;
+                    result.ContentTypes.Add(MediaTypeNames.Application.Json);
+                    return result;
+                };
+
             }).AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
             });
 
             services.AddSwaggerGen(appSetting);
-
-                                                                                                                                                                           
-
-            services.AddLogDashboard();
 
             services.AddAuthentication(appSetting);
             services.AddAuthorization("Default");
@@ -100,8 +111,6 @@ namespace Jt.SingleService
             {
                 c.SwaggerEndpoint($"/swagger/{appSetting.AppVersion}/swagger.json", $"{appSetting.AppName} {appSetting.AppVersion}");
             });
-
-            app.UseLogDashboard();
 
             app.UseAuthentication();
             app.UseAuthorization();

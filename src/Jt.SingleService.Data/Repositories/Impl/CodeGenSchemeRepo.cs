@@ -1,12 +1,9 @@
-using Jt.SingleService.Data.DbContexts;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Lib.DI;
+using Jt.Common.Tool.DI;
 using Microsoft.EntityFrameworkCore;
 
-namespace Jt.SingleService.Data.Repositories.Impl
+namespace Jt.SingleService.Data
 {
-    public class CodeGenSchemeRepo : BaseRepo<CodeGenScheme>, ICodeGenSchemeRepo, ITransientInterface
+    public class CodeGenSchemeRepo : BaseRepo<CodeGenScheme>, ICodeGenSchemeRepo, ITransientDIInterface
     {
         public CodeGenSchemeRepo(MysqlDbContext dbContext) : base(dbContext)
         {
@@ -16,9 +13,9 @@ namespace Jt.SingleService.Data.Repositories.Impl
         public async Task<CodeGenScheme> GetCodeGenSchemeAsync(string schemeId)
         {
             return await DbSet.Where(x => x.Id == schemeId)
-                             .Include(x => x.CodeSchemeDetials)
-                                 .ThenInclude(x => x.CodeTemp)
-                             .FirstOrDefaultAsync();
+                            .Include(x => x.CodeSchemeDetials.Where(o => o.IsDel == 0))
+                                .ThenInclude(x => x.CodeTemp)
+                            .FirstOrDefaultAsync();
         }
     }
 }

@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Jt.SingleService.Core;
+using Microsoft.AspNetCore.Http;
 
-namespace Jt.SingleService.Service.FileSvc
+namespace Jt.SingleService.Service
 {
     public interface IFileSvc
     {
@@ -15,7 +11,7 @@ namespace Jt.SingleService.Service.FileSvc
         /// <param name="stream">stream</param>
         /// <param name="fileName">fileName</param>
         /// <returns>string</returns>
-        Task<string> UploadFileAsync(IFormFile file, string fileName);
+        Task<ApiResponse<string>> UploadFileAsync(IFormFile file, string fileName);
 
         /// <summary>
         /// 上传头像
@@ -23,6 +19,6 @@ namespace Jt.SingleService.Service.FileSvc
         /// <param name="stream">stream</param>
         /// <param name="fileName">fileName</param>
         /// <returns>string</returns>
-        Task<string> UploadAvatarAsync(IFormFile file, string fileName);
+        Task<ApiResponse<string>> UploadAvatarAsync(IFormFile file, string fileName);
     }
 }

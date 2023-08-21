@@ -1,12 +1,10 @@
-﻿using Jt.SingleService.Core.Cache;
-using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Lib.DI;
-using Jt.SingleService.Service.SysLogSvc;
+﻿using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class SysLogCacheSvc : ISysLogCacheSvc, ITransientInterface
+    public class SysLogCacheSvc : ISysLogCacheSvc, ITransientDIInterface
     {
         private readonly string KeySysLog = "KeySysLog";
         private readonly string KeyIpRecordStats = "KeyIpRecordStats";
@@ -29,12 +27,12 @@ namespace Jt.SingleService.Service.UserSvc
 
         public async Task PushLogAsync(SysLog sysLog)
         {
-           await _cacheSvc.ListRightPushAsync(KeySysLog, sysLog);
+            await _cacheSvc.ListRightPushAsync(KeySysLog, sysLog);
         }
 
         public async Task IncIpStatsAsync(string ip)
         {
-           await _cacheSvc.HashSetIncAsync(KeyIpRecordStats, ip);
+            await _cacheSvc.HashSetIncAsync(KeyIpRecordStats, ip);
         }
 
         public async Task<List<KeyValueDto<long>>> GetIpStatsAsync()
@@ -54,10 +52,10 @@ namespace Jt.SingleService.Service.UserSvc
             }
             else
             {
-                result =await _logSvc.GetIpStatsAsync();
+                result = (await _logSvc.GetIpStatsAsync()).Data;
                 foreach (var item in result)
                 {
-                  await  _cacheSvc.HashSetAsync(KeyIpRecordStats, item.Key, item.Value.ToString());
+                    await _cacheSvc.HashSetAsync(KeyIpRecordStats, item.Key, item.Value.ToString());
                 }
             }
             result = result.OrderByDescending(x => x.Value).Take(10).ToList();
@@ -67,14 +65,14 @@ namespace Jt.SingleService.Service.UserSvc
         public async Task IncTodayIpStatsAsync(string ip)
         {
             string key = $"{DateTime.Now:d}{KeyIpRecordStats}";
-            if (! await _cacheSvc.ExistsAsync(key))
+            if (!await _cacheSvc.ExistsAsync(key))
             {
-              await  _cacheSvc.HashSetIncAsync(key, ip);
-              await  _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
+                await _cacheSvc.HashSetIncAsync(key, ip);
+                await _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
             }
             else
             {
-              await  _cacheSvc.HashSetIncAsync(key, ip);
+                await _cacheSvc.HashSetIncAsync(key, ip);
             }
         }
 
@@ -96,12 +94,12 @@ namespace Jt.SingleService.Service.UserSvc
             }
             else
             {
-                result =await _logSvc.GetTodayIpStatsAsync(DateTime.Now);
+                result = (await _logSvc.GetTodayIpStatsAsync(DateTime.Now)).Data;
                 foreach (var item in result)
                 {
-                  await  _cacheSvc.HashSetAsync(key, item.Key, item.Value.ToString());
+                    await _cacheSvc.HashSetAsync(key, item.Key, item.Value.ToString());
                 }
-              await  _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
+                await _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
             }
             result = result.OrderByDescending(x => x.Value).Take(10).ToList();
             return result;
@@ -110,7 +108,7 @@ namespace Jt.SingleService.Service.UserSvc
         public async Task IncActionStatsAsync(string controller, string action)
         {
             string field = $"/{controller}/{action}";
-           await _cacheSvc.HashSetIncAsync(KeyActionRecordStats, field);
+            await _cacheSvc.HashSetIncAsync(KeyActionRecordStats, field);
         }
 
         public async Task<List<KeyValueDto<long>>> GetActionStatsAsync()
@@ -118,23 +116,23 @@ namespace Jt.SingleService.Service.UserSvc
             List<KeyValueDto<long>> result = new List<KeyValueDto<long>>();
             if (await _cacheSvc.ExistsAsync(KeyActionRecordStats))
             {
-                var val =await _cacheSvc.GetHashSetAsync<long>(KeyActionRecordStats);
+                var val = await _cacheSvc.GetHashSetAsync<long>(KeyActionRecordStats);
                 foreach (var item in val)
                 {
                     result.Add(new KeyValueDto<long>
                     {
-                        Key= item.Key,
+                        Key = item.Key,
                         Value = item.Value
                     });
                 }
             }
             else
             {
-                var dbResult =await _logSvc.GetActionStatsAsync();
-                foreach (var item in dbResult)
+                var dbResult = await _logSvc.GetActionStatsAsync();
+                foreach (var item in dbResult.Data)
                 {
                     string field = $"/{item.controller}/{item.action}";
-                   await _cacheSvc.HashSetAsync(KeyActionRecordStats, field, item.count.ToString());
+                    await _cacheSvc.HashSetAsync(KeyActionRecordStats, field, item.count.ToString());
                     result.Add(new KeyValueDto<long>
                     {
                         Key = field,
@@ -152,12 +150,12 @@ namespace Jt.SingleService.Service.UserSvc
             string field = $"/{controller}/{action}";
             if (!await _cacheSvc.ExistsAsync(key))
             {
-              await  _cacheSvc.HashSetIncAsync(key, field);
+                await _cacheSvc.HashSetIncAsync(key, field);
                 await _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
             }
             else
             {
-               await _cacheSvc.HashSetIncAsync(key, field);
+                await _cacheSvc.HashSetIncAsync(key, field);
             }
         }
 
@@ -167,7 +165,7 @@ namespace Jt.SingleService.Service.UserSvc
             string key = $"{DateTime.Now:d}{KeyActionRecordStats}";
             if (await _cacheSvc.ExistsAsync(key))
             {
-                var val =await _cacheSvc.GetHashSetAsync<long>(key);
+                var val = await _cacheSvc.GetHashSetAsync<long>(key);
                 foreach (var item in val)
                 {
                     result.Add(new KeyValueDto<long>
@@ -179,18 +177,18 @@ namespace Jt.SingleService.Service.UserSvc
             }
             else
             {
-                var dbResult =await _logSvc.GetTodayActionStatsAsync(DateTime.Now);
-                foreach (var item in dbResult)
+                var dbResult = await _logSvc.GetTodayActionStatsAsync(DateTime.Now);
+                foreach (var item in dbResult.Data)
                 {
                     string field = $"/{item.controller}/{item.action}";
-                  await  _cacheSvc.HashSetAsync(key, field, item.count.ToString());
+                    await _cacheSvc.HashSetAsync(key, field, item.count.ToString());
                     result.Add(new KeyValueDto<long>
                     {
                         Key = field,
                         Value = item.count
                     });
                 }
-              await  _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
+                await _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
             }
             result = result.OrderByDescending(x => x.Value).Take(10).ToList();
             return result;
@@ -198,7 +196,7 @@ namespace Jt.SingleService.Service.UserSvc
 
         public async Task IncTotalStatsAsync()
         {
-           await _cacheSvc.IncAsync(KeyTotalRecordStats);
+            await _cacheSvc.IncAsync(KeyTotalRecordStats);
         }
         public async Task<long> GetTotalStatsAsync()
         {
@@ -208,8 +206,8 @@ namespace Jt.SingleService.Service.UserSvc
             }
             else
             {
-                long result =await _logSvc.GetTotalStatsAsync();
-             await   _cacheSvc.AddAsync(KeyTotalRecordStats, result);
+                var result = (await _logSvc.GetTotalStatsAsync()).Data;
+                await _cacheSvc.AddAsync(KeyTotalRecordStats, result);
                 return result;
             }
         }
@@ -219,12 +217,12 @@ namespace Jt.SingleService.Service.UserSvc
             string key = $"{DateTime.Now:d}{KeyTotalRecordStats}";
             if (!await _cacheSvc.ExistsAsync(key))
             {
-               await _cacheSvc.IncAsync(key);
-               await _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
+                await _cacheSvc.IncAsync(key);
+                await _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
             }
             else
             {
-              await  _cacheSvc.IncAsync(key);
+                await _cacheSvc.IncAsync(key);
             }
         }
         public async Task<long> GetTodayTotalStatsAsync()
@@ -232,13 +230,13 @@ namespace Jt.SingleService.Service.UserSvc
             string key = $"{DateTime.Now:d}{KeyTotalRecordStats}";
             if (await _cacheSvc.ExistsAsync(key))
             {
-                return (long) await _cacheSvc.GetAsync(key);
+                return (long)await _cacheSvc.GetAsync(key);
             }
             else
             {
-                long result =await _logSvc.GetTodayTotalStatsAsync(DateTime.Now);
-               await _cacheSvc.AddAsync(key, result);
-               await _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
+                long result = (await _logSvc.GetTodayTotalStatsAsync(DateTime.Now)).Data;
+                await _cacheSvc.AddAsync(key, result);
+                await _cacheSvc.KeyExpireAtAsync(key, DateTime.Now.AddDays(7));
                 return result;
             }
         }
@@ -260,9 +258,9 @@ namespace Jt.SingleService.Service.UserSvc
                 }
                 else
                 {
-                    long result =await _logSvc.GetTodayTotalStatsAsync(time);
-                   await _cacheSvc.AddAsync(key, result);
-                  await  _cacheSvc.KeyExpireAtAsync(key, time.AddDays(7));
+                    long result = (await _logSvc.GetTodayTotalStatsAsync(time)).Data;
+                    await _cacheSvc.AddAsync(key, result);
+                    await _cacheSvc.KeyExpireAtAsync(key, time.AddDays(7));
                     weekTotalStats.Add(new KeyValueDto<long>
                     {
                         Key = $"{time:d}",

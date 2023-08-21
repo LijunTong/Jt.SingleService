@@ -1,8 +1,6 @@
-using Jt.SingleService.Data.Tables;
-
-namespace Jt.SingleService.Data.Repositories.Interface
+namespace Jt.SingleService.Data
 {
-    public interface IActionRepo : IBaseRepo<Tables.Action>
+    public interface IActionRepo : IBaseRepo<Action>
     {
 
     }

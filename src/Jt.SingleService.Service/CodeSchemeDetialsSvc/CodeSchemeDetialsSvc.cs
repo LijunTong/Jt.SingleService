@@ -1,11 +1,9 @@
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Service.CodeSchemeDetialsSvc;
-using Jt.SingleService.Lib.DI;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class CodeSchemeDetialsSvc : BaseSvc<CodeSchemeDetials>, ICodeSchemeDetialsSvc, ITransientInterface
+    public class CodeSchemeDetialsSvc : BaseSvc<CodeSchemeDetials>, ICodeSchemeDetialsSvc, ITransientDIInterface
     {
         private readonly ICodeSchemeDetialsRepo _repository;
 

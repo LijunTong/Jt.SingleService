@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Jt.SingleService.Data.DbContexts
+namespace Jt.SingleService.Data
 {
     public class DefaultPostgreSQLContext : DbContext
     {

@@ -1,6 +1,4 @@
-using Jt.SingleService.Data.Tables;
-
-namespace Jt.SingleService.Data.Repositories.Interface
+namespace Jt.SingleService.Data
 {
     public interface ICodeGenSchemeRepo : IBaseRepo<CodeGenScheme>
     {

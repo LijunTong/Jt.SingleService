@@ -1,52 +1,53 @@
-using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Lib.Extensions;
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Data.Repositories.Dto;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Lib.Utils;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Service.CodeGenSchemeSvc;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
+using Jt.Common.Tool.Extension;
 using Microsoft.EntityFrameworkCore.Storage;
-using Jt.SingleService.Lib.DI;
+using Microsoft.Extensions.Logging;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class CodeGenSchemeSvc : BaseSvc<CodeGenScheme>, ICodeGenSchemeSvc, ITransientInterface
+    public class CodeGenSchemeSvc : BaseSvc<CodeGenScheme>, ICodeGenSchemeSvc, ITransientDIInterface
     {
         private readonly ICodeGenSchemeRepo _repository;
         private readonly ICodeSchemeDetialsRepo _schemeDetialsRepository;
-        private readonly CHelperSnowflake _snowflake;
+        private readonly IIDSvc _snowflake;
+        private readonly ILogger<CodeGenSchemeSvc> _logger;
 
         public CodeGenSchemeSvc(ICodeGenSchemeRepo repository, ICodeSchemeDetialsRepo schemeDetialsRepository,
-            CHelperSnowflake snowflake) : base(repository)
+            IIDSvc snowflake, ILogger<CodeGenSchemeSvc> logger) : base(repository)
         {
             _repository = repository;
             _schemeDetialsRepository = schemeDetialsRepository;
             _snowflake = snowflake;
+            _logger = logger;
         }
 
-        public Task<CodeGenScheme> GetCodeGenSchemeAsync(string schemeId)
+        public async Task<ApiResponse<CodeGenScheme>> GetCodeGenSchemeAsync(string schemeId)
         {
-            return _repository.GetCodeGenSchemeAsync(schemeId);
+            var data = await _repository.GetCodeGenSchemeAsync(schemeId);
+            return ApiResponse<CodeGenScheme>.Succeed(data);
         }
 
-        public async Task<List<CodeGenScheme>> GetListByUserIdAsync(string userId)
+        public async Task<ApiResponse<List<CodeGenScheme>>> GetListByUserIdAsync(string userId)
         {
-            return await _repository.GetListAsync(x => x.UserId == userId);
+            var data = await _repository.GetListAsync(x => x.UserId == userId);
+            return ApiResponse<List<CodeGenScheme>>.Succeed(data);
         }
 
-        public async Task<List<CodeGenScheme>> GetPageListByUserIdAsync(PagerReq pagerEntity, string userId)
+        public async Task<ApiResponse<PagerOutput<CodeGenScheme>>> GetPageListByUserIdAsync(PagerReq pagerEntity, string userId)
         {
-            return await _repository.GetListAsync(x => x.UserId == userId, pagerEntity);
-
+            var data =  await base.GetPagerListAsync(x => x.UserId == userId, pagerEntity);
+            return data;
         }
 
-        public async Task<List<CodeSchemeDetials>> GetSchemeDetialsAsync(string schemeId)
+        public async Task<ApiResponse<List<CodeSchemeDetials>>> GetSchemeDetialsAsync(string schemeId)
         {
-            return await _schemeDetialsRepository.GetSchemeDetialsAsync(schemeId);
+            var data = await _schemeDetialsRepository.GetSchemeDetialsAsync(schemeId);
+            return ApiResponse<List<CodeSchemeDetials>>.Succeed(data);
         }
 
-        public async Task InsertSchemeAsync(CodeGenSchemeDto dto)
+        public async Task<ApiResponse<bool>> InsertSchemeAsync(CodeGenSchemeDto dto)
         {
             using (var tran = await _repository.BeginTransactionAsync())
             {
@@ -64,12 +65,12 @@ namespace Jt.SingleService.Service.UserSvc
                     }
                     else
                     {
-                        var entity = await GetEntityByIdAsync(dto.CodeGenScheme.Id);
+                        var entity = await _repository.GetByIdAsync(dto.CodeGenScheme.Id);
                         entity.Updater = dto.UserId;
                         entity.UpTime = DateTime.Now;
                         entity.Name = dto.CodeGenScheme.Name;
                         entity.Des = dto.CodeGenScheme.Des;
-                        await  _repository.UpdateAsync(entity);
+                        await _repository.UpdateAsync(entity);
                     }
                     await _repository.SaveAsync();
                     foreach (var temp in dto.Temps)
@@ -93,12 +94,15 @@ namespace Jt.SingleService.Service.UserSvc
                     await _schemeDetialsRepository.SaveAsync();
                     tran.Commit();
                 }
-                catch
+                catch (Exception ex)
                 {
                     tran.Rollback();
-                    throw;
+                    _logger.LogError(ex, "InsertSchemeAsync");
+                    return ApiResponse<bool>.SystemError("ÐÂÔöÒì³£");
                 }
             }
+
+            return ApiResponse<bool>.Succeed(true);
         }
     }
 }

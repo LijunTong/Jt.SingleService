@@ -1,41 +1,40 @@
-using Jt.SingleService.Core.Attributes;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Lib.Utils;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Service.ControllerSvc;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
+using Jt.Common.Tool.Helper;
 using System.Reflection;
-using Jt.SingleService.Lib.DI;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class ControllerSvc : BaseSvc<Controller>, IControllerSvc, ITransientInterface
+    public class ControllerSvc : BaseSvc<Controller>, IControllerSvc, ITransientDIInterface
     {
         private readonly IControllerRepo _repository;
-        private readonly CHelperSnowflake _snowflake;
+        private readonly IIDSvc _snowflake;
 
-        public ControllerSvc(IControllerRepo repository, CHelperSnowflake snowflake) : base(repository)
+        public ControllerSvc(IControllerRepo repository, IIDSvc snowflake) : base(repository)
         {
             _repository = repository;
             _snowflake = snowflake;
         }
 
-        public async Task<List<Controller>> GetControllersAsync()
+        public async Task<ApiResponse<List<Controller>>> GetControllersAsync()
         {
-            return await _repository.GetListAsync();
+            var data = await _repository.GetListAsync();
+            return ApiResponse<List<Controller>>.Succeed(data);
         }
 
         public async Task InitControllerAsync()
         {
             Assembly[] assembly = AppDomain.CurrentDomain.GetAssemblies();
-            var types = CHelperAssembly.GetTypesByAttribute(assembly, typeof(AuthorControllerAttribute));
+            var types = AssemblyHelper.GetTypesByAttribute(assembly, typeof(AuthorControllerAttribute));
             if (types != null)
             {
-                var existsControllers = await GetAllListAsync();
+                var existsControllers = (await GetAllListAsync()).Data;
 
                 List<Controller> addControllers = new List<Controller>();
                 foreach (var item in types)
                 {
-                    if(!existsControllers.Any(x=>x.Name == item.Name))
+                    if (!existsControllers.Any(x => x.Name == item.Name))
                     {
                         var controller = new Controller()
                         {
@@ -52,16 +51,16 @@ namespace Jt.SingleService.Service.UserSvc
                 List<Controller> delControllers = new List<Controller>();
                 foreach (var item in existsControllers)
                 {
-                    if(!types.Any(x=>x.Name == item.Name))
+                    if (!types.Any(x => x.Name == item.Name))
                     {
                         delControllers.Add(item);
                     }
                 }
-                if(addControllers.Any())
+                if (addControllers.Any())
                 {
                     await _repository.InsertListAsync(addControllers);
                 }
-                if(delControllers.Any())
+                if (delControllers.Any())
                 {
                     List<string> ids = delControllers.Select(x => x.Id).ToList();
                     await _repository.DeleteAsync(x => ids.Contains(x.Id));

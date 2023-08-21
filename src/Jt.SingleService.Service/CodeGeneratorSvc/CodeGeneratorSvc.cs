@@ -1,16 +1,12 @@
-﻿using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Core.Enums;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Tables.DatabaseEntity;
+﻿using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
 using Jt.SingleService.Lib.Utils;
-using Jt.SingleService.Data.Repositories.Impl.DbExtracts;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Service.CodeDbSvc;
-using Jt.SingleService.Lib.DI;
+using Jt.Common.Tool.Helper;
 
-namespace Jt.SingleService.Service.CodeGeneratorSvc
+namespace Jt.SingleService.Service
 {
-    public class CodeGeneratorSvc : ICodeGeneratorSvc, ITransientInterface
+    public class CodeGeneratorSvc : ICodeGeneratorSvc, ITransientDIInterface
     {
         private IDbExtractRepo _dbExtractRepo;
 
@@ -39,26 +35,28 @@ namespace Jt.SingleService.Service.CodeGeneratorSvc
             await _dbExtractRepo.SetDbTypeAsync(dbType, connectStr);
         }
 
-        public async Task<List<DbInfo>> GetDataBasesAsync()
+        public async Task<ApiResponse<List<DbInfo>>> GetDataBasesAsync()
         {
-            return await _dbExtractRepo.GetDataBasesAsync();
+            var data = await _dbExtractRepo.GetDataBasesAsync();
+            return ApiResponse<List<DbInfo>>.Succeed(data);
         }
 
-        public Task<List<DbFieldInfo>> GetDbFieldsAsync(string dbName, string tableName)
+        public async Task<ApiResponse<List<DbFieldInfo>>> GetDbFieldsAsync(string dbName, string tableName)
         {
-            var data = _dbExtractRepo.GetDbFieldsAsync(dbName, tableName);
-            return data;
+            var data = await _dbExtractRepo.GetDbFieldsAsync(dbName, tableName);
+            return ApiResponse<List<DbFieldInfo>>.Succeed(data);
         }
 
-        public Task<List<DbTableInfo>> GetTableNamesAsync(string dbName)
+        public async Task<ApiResponse<List<DbTableInfo>>> GetTableNamesAsync(string dbName)
         {
-            return _dbExtractRepo.GetTableNamesAsync(dbName);
+            var data = await _dbExtractRepo.GetTableNamesAsync(dbName);
+            return ApiResponse<List<DbTableInfo>>.Succeed(data);
         }
 
-        public async Task<string> CodeGenerateAsync(List<CodeTemp> codeTemps, CodeTempParamsDto codeTempParams, string fileDir)
+        public async Task<ApiResponse<string>> CodeGenerateAsync(List<CodeTemp> codeTemps, CodeTempParamsDto codeTempParams, string fileDir)
         {
             fileDir = Path.Combine(fileDir, Guid.NewGuid().ToString());
-            CHelperResSystem.Mkdirs(fileDir);
+            ResSystemHelper.Mkdirs(fileDir);
             foreach (var temp in codeTempParams.Temps)
             {
                 var item = codeTemps.Where(x => x.Id == temp.TempId).FirstOrDefault();
@@ -73,24 +71,26 @@ namespace Jt.SingleService.Service.CodeGeneratorSvc
                 }
                 try
                 {
-                    string content = CHelperRazorEngine.CodeGenerateRazorEngine(key, item.TempContent, codeTempParams);
-                    ChelperFileInfo.SaveToFile(fileDir, temp.FileName, content);
+                    await Task.Run(() =>
+                    {
+                        string content = CHelperRazorEngine.CodeGenerateRazorEngine(key, item.TempContent, codeTempParams);
+                        FileInfoHelper.WriteToFile(fileDir, temp.FileName, content);
+                    });
                 }
                 catch (Exception ex)
                 {
                     string msg = ex.Message.ToString();
-                    ChelperFileInfo.SaveToFile(fileDir, temp.FileName + ".log", msg);
+                    FileInfoHelper.WriteToFile(fileDir, temp.FileName + ".log", msg);
                 }
             }
-            await Task.CompletedTask;
-            if (CHelperZip.Zip(fileDir))
+
+            string data = "";
+            if (ZipHelper.Zip(fileDir))
             {
-                return fileDir + ".zip";
+                data = fileDir + ".zip";
             }
-            else
-            {
-                return "";
-            }
+
+            return ApiResponse<string>.Succeed(data);
         }
     }
 }

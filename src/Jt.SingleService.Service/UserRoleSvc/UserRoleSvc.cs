@@ -1,18 +1,15 @@
-using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Service.UserRoleSvc;
-using Jt.SingleService.Lib.DI;
-using Jt.SingleService.Lib.Utils;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class UserRoleSvc : BaseSvc<UserRole>, IUserRoleSvc, ITransientInterface
+    public class UserRoleSvc : BaseSvc<UserRole>, IUserRoleSvc, ITransientDIInterface
     {
         private readonly IUserRoleRepo _repository;
-        private readonly CHelperSnowflake _snowflake;
+        private readonly IIDSvc _snowflake;
 
-        public UserRoleSvc(IUserRoleRepo repository, CHelperSnowflake snowflake) : base(repository)
+        public UserRoleSvc(IUserRoleRepo repository, IIDSvc snowflake) : base(repository)
         {
             _repository = repository;
             _snowflake = snowflake;
@@ -42,9 +39,10 @@ namespace Jt.SingleService.Service.UserSvc
             }
         }
 
-        public async Task<List<UserRole>> GetUserRolesAsync(string userId)
+        public async Task<ApiResponse< List<UserRole>>> GetUserRolesAsync(string userId)
         {
-            return await _repository.GetListAsync(x => x.UserId == userId);
+            var data = await _repository.GetListAsync(x => x.UserId == userId);
+            return ApiResponse<List<UserRole>>.Succeed(data);
         }
     }
 }

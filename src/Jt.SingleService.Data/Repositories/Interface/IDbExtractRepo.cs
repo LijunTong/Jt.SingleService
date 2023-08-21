@@ -1,6 +1,4 @@
-﻿using Jt.SingleService.Data.Tables.DatabaseEntity;
-
-namespace Jt.SingleService.Data.Repositories.Interface
+﻿namespace Jt.SingleService.Data
 {
     public interface IDbExtractRepo
     {

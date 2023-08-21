@@ -1,11 +1,8 @@
-using Jt.SingleService.Data.DbContexts;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Lib.DI;
+using Jt.Common.Tool.DI;
 
-namespace Jt.SingleService.Data.Repositories.Impl
+namespace Jt.SingleService.Data
 {
-    public class CodeDbRepo : BaseRepo<CodeDb>, ICodeDbRepo, ITransientInterface
+    public class CodeDbRepo : BaseRepo<CodeDb>, ICodeDbRepo, ITransientDIInterface
     {
         public CodeDbRepo(MysqlDbContext dbContext) : base(dbContext)
         {

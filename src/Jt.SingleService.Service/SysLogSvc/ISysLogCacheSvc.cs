@@ -1,7 +1,5 @@
-﻿using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Data.Tables;
-
-namespace Jt.SingleService.Service.UserSvc
+﻿using Jt.SingleService.Data;
+namespace Jt.SingleService.Service
 {
     public interface ISysLogCacheSvc
     {

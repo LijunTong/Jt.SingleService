@@ -1,25 +1,19 @@
-using Jt.SingleService.Core.Enums;
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Lib.Utils;
-using Jt.SingleService.Data.Repositories.Interface;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
+using Jt.Common.Tool.Extension;
 using Microsoft.EntityFrameworkCore.Storage;
-using Jt.SingleService.Lib.DI;
-using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Lib.Extensions;
-using Jt.SingleService.Data.Dto.User.Output;
-using Jt.SingleService.Data.Dto.User.Req;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class UserSvc : BaseSvc<User>, IUserSvc, ITransientInterface
+    public class UserSvc : BaseSvc<User>, IUserSvc, ITransientDIInterface
     {
         private readonly IUserRepo _repository;
         private readonly IUserRoleRepo _userRoleRepo;
         private readonly IRoleRepo _roleRepo;
-        private readonly CHelperSnowflake _snowflake;
+        private readonly IIDSvc _snowflake;
 
-        public UserSvc(IUserRepo repository, IUserRoleRepo userRoleRepo, IRoleRepo roleRepo, CHelperSnowflake snowflake) : base(repository)
+        public UserSvc(IUserRepo repository, IUserRoleRepo userRoleRepo, IRoleRepo roleRepo, IIDSvc snowflake) : base(repository)
         {
             _repository = repository;
             _userRoleRepo = userRoleRepo;
@@ -27,14 +21,16 @@ namespace Jt.SingleService.Service.UserSvc
             _snowflake = snowflake;
         }
 
-        public async Task<bool> CheckUserNameExistsAsync(string userName)
+        public async Task<ApiResponse<bool>> CheckUserNameExistsAsync(string userName)
         {
-            return await _repository.GetUserByNameAsync(userName) != null;
+            var data = await _repository.GetUserByNameAsync(userName) != null;
+            return ApiResponse<bool>.Succeed(data);
         }
 
-        public async Task<User> GetUserByNameAsync(string userName)
+        public async Task<ApiResponse<User>> GetUserByNameAsync(string userName)
         {
-            return await _repository.GetUserByNameAsync(userName);
+            var data = await _repository.GetUserByNameAsync(userName);
+            return ApiResponse<User>.Succeed(data);
         }
 
         public async Task<ApiResponse<bool>> RegisterAsync(User user)
@@ -42,7 +38,7 @@ namespace Jt.SingleService.Service.UserSvc
             Role role = await _roleRepo.GetFirstAsync(x => x.Code == EnumRole.User.ToString());
             if (role == null)
             {
-                return ApiResponse<bool>.GetFail(ApiReturnCode.OperationFail, "角色不存在");
+                return ApiResponse<bool>.Fail(ApiReturnCode.OperationFail, "角色不存在");
             }
 
             using (var tran = await _repository.BeginTransactionAsync())
@@ -71,32 +67,33 @@ namespace Jt.SingleService.Service.UserSvc
                 tran.Commit();
             }
 
-            return ApiResponse<bool>.GetSucceed(true);
+            return ApiResponse<bool>.Succeed(true);
         }
 
-        public async Task<GetUserInfoOutput> GetUserInfoAsync(string id)
+        public async Task<ApiResponse<GetUserInfoOutput>> GetUserInfoAsync(string id)
         {
             var user = await _repository.GetByIdAsync(id);
-            return user.ObjValueCopy<User, GetUserInfoOutput>();
+            var data = user.CopyValue<User, GetUserInfoOutput>();
+            return ApiResponse<GetUserInfoOutput>.Succeed(data);
         }
 
         public async Task<ApiResponse<GetPagerListOutput>> GetUserAsync(string id)
         {
             var user = await _repository.GetUserAsync(id);
-            GetPagerListOutput output = user.ObjValueCopy<User, GetPagerListOutput>();
-            return ApiResponse<GetPagerListOutput>.GetSucceed(output);
+            GetPagerListOutput output = user.CopyValue<User, GetPagerListOutput>();
+            return ApiResponse<GetPagerListOutput>.Succeed(output);
         }
 
-        public async Task<ApiResponse<PagerOutput>> GetUserPagerAsync(GetPagerListReq req)
+        public async Task<ApiResponse<PagerOutput<GetPagerListOutput>>> GetUserPagerAsync(GetPagerListReq req)
         {
             var users = await _repository.GetPagerListAsync(req);
-            List<GetPagerListOutput> listOutputs = users.ObjsValueCopy<User, GetPagerListOutput>();
-            PagerOutput pagerOutput = new PagerOutput
+            List<GetPagerListOutput> listOutputs = users.CopyValue<User, GetPagerListOutput>();
+            PagerOutput<GetPagerListOutput> pagerOutput = new PagerOutput<GetPagerListOutput>
             {
                 Total = req.Total,
                 Data = listOutputs
             };
-            return ApiResponse<PagerOutput>.GetSucceed(pagerOutput);
+            return ApiResponse<PagerOutput<GetPagerListOutput>>.Succeed(pagerOutput);
         }
     }
 }

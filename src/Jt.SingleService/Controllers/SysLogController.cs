@@ -1,14 +1,8 @@
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Jwt;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Core.Attributes;
-using Jt.SingleService.Core.Enums;
-using Jt.SingleService.Service.SysLogSvc;
-using Microsoft.AspNetCore.Authorization;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.SingleService.Service;
+using Jt.Common.Tool.Helper;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using Jt.SingleService.Service.UserSvc;
-using Jt.SingleService.Lib.Utils;
 
 namespace Jt.SingleService.Controllers
 {
@@ -17,13 +11,11 @@ namespace Jt.SingleService.Controllers
     public class SysLogController : BaseController
     {
         private ISysLogSvc _service;
-        private JwtHelper _jwtHelper;
         private ISysLogCacheSvc _cacheSvc;
 
-        public SysLogController(ISysLogSvc service, JwtHelper jwtHelper, ISysLogCacheSvc cacheService)
+        public SysLogController(ISysLogSvc service, JwtHelper jwtHelper, ISysLogCacheSvc cacheService) : base(jwtHelper)
         {
             _service = service;
-            _jwtHelper = jwtHelper;
             _cacheSvc = cacheService;
         }
 
@@ -36,9 +28,9 @@ namespace Jt.SingleService.Controllers
         public async Task<ActionResult> Insert([FromBody] SysLog entity)
         {
             entity.CreateTime = DateTime.Now;
-            entity.Creater = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
+            entity.Creater = GetUser()?.Id;
             await _service.InsertAsync(entity);
-            return Ok(ApiResponse<bool>.GetSucceed(true));
+            return Successed(true);
         }
 
         /// <summary>
@@ -50,9 +42,9 @@ namespace Jt.SingleService.Controllers
         public async Task<ActionResult> Update([FromBody] SysLog entity)
         {
             entity.UpTime = DateTime.Now;
-            entity.Updater = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
-            await _service.UpdateAsync(entity);
-            return Ok(ApiResponse<bool>.GetSucceed(true));
+            entity.Updater = GetUser()?.Id;
+            var data = await _service.UpdateAsync(entity);
+            return Ok(data);
         }
 
         /// <summary>
@@ -63,8 +55,8 @@ namespace Jt.SingleService.Controllers
         [Action("删除", EnumActionType.AuthorizeAndLog)]
         public async Task<ActionResult> Delete(string id)
         {
-            await _service.DeleteAsync(id);
-            return Ok(ApiResponse<bool>.GetSucceed(true));
+            var data = await _service.DeleteAsync(id);
+            return Ok(data);
         }
 
         /// <summary>
@@ -75,7 +67,7 @@ namespace Jt.SingleService.Controllers
         public async Task<ActionResult> Get(string id)
         {
             var data = await _service.GetEntityByIdAsync(id);
-            return Ok(ApiResponse<SysLog>.GetSucceed(data));
+            return Ok(data);
         }
 
         /// <summary>
@@ -86,7 +78,7 @@ namespace Jt.SingleService.Controllers
         public async Task<ActionResult> List()
         {
             var data = await _service.GetAllListAsync();
-            return Ok(ApiResponse<List<SysLog>>.GetSucceed(data));
+            return Ok(data);
         }
 
         /// <summary>
@@ -95,71 +87,66 @@ namespace Jt.SingleService.Controllers
         /// <returns></returns>
         [HttpPost("ListPager")]
         [Action("列表", EnumActionType.AuthorizeAndLog)]
-        public async Task<ActionResult> ListPager([FromQuery] PagerReq pagerReq)
+        public async Task<ActionResult> ListPager([FromBody] GetLogPagerReq req)
         {
-            var data = await _service.GetPagerListAsync(pager: pagerReq);
-            PagerOutput pager = new PagerOutput()
-            {
-                Total = pagerReq.Total,
-                Data = data
-            };
-            return Ok(ApiResponse<PagerOutput>.GetSucceed(pager));
+            var data = await _service.GetLogsPagerListAsync(req);
+            return Ok(data);
         }
 
         [HttpPost("GetActionStats")]
         public async Task<ActionResult> GetActionStats()
         {
-            var data =await _cacheSvc.GetActionStatsAsync();
+            var data = await _cacheSvc.GetActionStatsAsync();
             return Successed(data);
         }
 
         [HttpPost("GetTodayActionStats")]
         public async Task<ActionResult> GetTodayActionStats()
         {
-            var data =await _cacheSvc.GetTodayActionStatsAsync();
+            var data = await _cacheSvc.GetTodayActionStatsAsync();
             return Successed(data);
         }
 
         [HttpPost("GetIpStats")]
         public async Task<ActionResult> GetIpStats()
         {
-            var data =await _cacheSvc.GetIpStatsAsync();
+            var data = await _cacheSvc.GetIpStatsAsync();
             return Successed(data);
         }
 
         [HttpPost("GetTodayIpStats")]
         public async Task<ActionResult> GetTodayIpStats()
         {
-            var data =await _cacheSvc.GetTodayIpStatsAsync();
+            var data = await _cacheSvc.GetTodayIpStatsAsync();
             return Successed(data);
         }
 
         [HttpPost("GetTotalStats")]
         public async Task<ActionResult> GetTotalStats()
         {
-            var data =await _cacheSvc.GetTotalStatsAsync();
+            var data = await _cacheSvc.GetTotalStatsAsync();
             return Successed(data);
         }
 
         [HttpPost("GetTodayTotalStats")]
         public async Task<ActionResult> GetTodayTotalStats()
         {
-            var data =await _cacheSvc.GetTodayTotalStatsAsync();
+            var data = await _cacheSvc.GetTodayTotalStatsAsync();
             return Successed(data);
         }
 
         [HttpPost("GetWeekTotalStats")]
         public async Task<ActionResult> GetWeekTotalStats()
         {
-            var data =await _cacheSvc.GetWeekTotalStatsAsync();
+            var data = await _cacheSvc.GetWeekTotalStatsAsync();
             return Successed(data);
         }
 
         [HttpPost("GetLogType")]
         public async Task<ActionResult> GetLogType()
         {
-           await Task.CompletedTask;
-            var data = CHelperEnum.EnumToList(typeof(EnumLogType));
+            await Task.CompletedTask;
+            var data = EnumHelper.EnumToList(typeof(EnumLogType));
             return Successed(data);
         }
     }

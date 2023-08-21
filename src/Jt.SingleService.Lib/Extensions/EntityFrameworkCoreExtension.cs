@@ -1,14 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Common;
-using System.Data;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace Jt.SingleService.Lib.Extensions
 {

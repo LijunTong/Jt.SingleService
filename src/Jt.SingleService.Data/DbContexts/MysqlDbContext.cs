@@ -1,9 +1,9 @@
-﻿using Jt.SingleService.Core.Options;
+﻿using Jt.SingleService.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Reflection;
 
-namespace Jt.SingleService.Data.DbContexts
+namespace Jt.SingleService.Data
 {
     public class MysqlDbContext : DbContext
     {
@@ -16,7 +16,8 @@ namespace Jt.SingleService.Data.DbContexts
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql(_appSettings.ConnectionStrings.Mysql, new MySqlServerVersion(_appSettings.ConnectionStrings.Version));
+            optionsBuilder.UseMySql(_appSettings.ConnectionStrings.Mysql, new MySqlServerVersion(_appSettings.ConnectionStrings.Version))
+                .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
             optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             base.OnConfiguring(optionsBuilder);
         }

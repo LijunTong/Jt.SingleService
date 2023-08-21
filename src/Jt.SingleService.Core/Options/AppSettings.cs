@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Jt.SingleService.Core.Options
+﻿namespace Jt.SingleService.Core
 {
     public class AppSettings
     {
@@ -40,7 +34,7 @@ namespace Jt.SingleService.Core.Options
         public class JwtConfig
         {
             public string SecurityKey { get; set; }
-            
+
             public string Issuer { get; set; }
 
             public string Audience { get; set; }

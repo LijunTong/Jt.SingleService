@@ -1,13 +1,7 @@
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Jwt;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Core.Attributes;
-using Jt.SingleService.Core.Enums;
-using Jt.SingleService.Service.CodeTempSvc;
-using Microsoft.AspNetCore.Authorization;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.SingleService.Service;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using Jt.SingleService.Lib.Utils;
 
 namespace Jt.SingleService.Controllers
 {
@@ -16,14 +10,10 @@ namespace Jt.SingleService.Controllers
     public class CodeTempController : BaseController
     {
         private ICodeTempSvc _service;
-        private JwtHelper _jwtHelper;
-        private readonly CHelperSnowflake _snowflake;
 
-        public CodeTempController(ICodeTempSvc service, JwtHelper jwtHelper, CHelperSnowflake snowflake)
+        public CodeTempController(ICodeTempSvc service, JwtHelper jwtHelper) : base(jwtHelper)
         {
             _service = service;
-            _jwtHelper = jwtHelper;
-            _snowflake = snowflake;
         }
 
         /// <summary>
@@ -34,13 +24,10 @@ namespace Jt.SingleService.Controllers
         [Action("新增", EnumActionType.AuthorizeAndLog)]
         public async Task<ActionResult> Insert([FromBody] CodeTemp entity)
         {
-            entity.Id = _snowflake.NextId().ToString();
-            entity.CreateTime = DateTime.Now;
-            entity.Creater = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
-            entity.UpTime = DateTime.Now;
-            entity.Updater = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
+            entity.Creater = GetUser()?.Id;
+            entity.Updater = GetUser()?.Id;
             await _service.InsertAsync(entity);
-            return Ok(ApiResponse<bool>.GetSucceed(true));
+            return Ok(ApiResponse<object>.Succeed(true));
         }
 
         /// <summary>
@@ -51,10 +38,9 @@ namespace Jt.SingleService.Controllers
         [Action("修改", EnumActionType.AuthorizeAndLog)]
         public async Task<ActionResult> Update([FromBody] CodeTemp entity)
         {
-            entity.UpTime = DateTime.Now;
-            entity.Updater = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
-            await _service.UpdateAsync(entity);
-            return Ok(ApiResponse<bool>.GetSucceed(true));
+            entity.Updater = GetUser()?.Id;
+            var data = await _service.UpdateAsync(entity);
+            return Ok(data);
         }
 
         /// <summary>
@@ -65,8 +51,8 @@ namespace Jt.SingleService.Controllers
         [Action("删除", EnumActionType.AuthorizeAndLog)]
         public async Task<ActionResult> Delete(string id)
         {
-            await _service.DeleteAsync(id);
-            return Ok(ApiResponse<bool>.GetSucceed(true));
+            var data = await _service.DeleteAsync(id);
+            return Ok(data);
         }
 
         /// <summary>
@@ -77,7 +63,7 @@ namespace Jt.SingleService.Controllers
         public async Task<ActionResult> Get(string id)
         {
             var data = await _service.GetEntityByIdAsync(id);
-            return Ok(ApiResponse<CodeTemp>.GetSucceed(data));
+            return Ok(data);
         }
 
         /// <summary>
@@ -87,9 +73,9 @@ namespace Jt.SingleService.Controllers
         [HttpPost("List")]
         public async Task<ActionResult> List()
         {
-            string userId = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
+            string userId = GetUser()?.Id;
             var data = await _service.GetListByUserIdAsync(userId);
-            return Ok(ApiResponse<List<CodeTemp>>.GetSucceed(data));
+            return Ok(data);
         }
 
         /// <summary>
@@ -100,14 +86,9 @@ namespace Jt.SingleService.Controllers
         [Action("列表", EnumActionType.AuthorizeAndLog)]
         public async Task<ActionResult> ListPager([FromQuery] PagerReq pagerReq)
         {
-            string userId = (await _jwtHelper.UserAsync<JwtUser>(GetToken()))?.Id;
+            string userId = GetUser()?.Id;
             var data = await _service.GetPageListByUserIdAsync(pagerReq, userId);
-            PagerOutput pager = new PagerOutput()
-            {
-                Total = pagerReq.Total,
-                Data = data
-            };
-            return Ok(ApiResponse<PagerOutput>.GetSucceed(pager));
+            return Ok(data);
         }
 
         /// <summary>
@@ -118,7 +99,7 @@ namespace Jt.SingleService.Controllers
         public async Task<ActionResult> GetTempsByScheme(string schemeId)
         {
             var data = await _service.GetCodeTempsBySchemeAsync(schemeId);
-            return Ok(ApiResponse<List<CodeTemp>>.GetSucceed(data));
+            return Ok(data);
         }
     }
 }

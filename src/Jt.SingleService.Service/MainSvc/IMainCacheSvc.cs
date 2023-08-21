@@ -1,12 +1,7 @@
-﻿using Jt.SingleService.Data.Tables;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Action = Jt.SingleService.Data.Tables.Action;
-
-namespace Jt.SingleService.Service.MainSvc
+﻿using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Action = Jt.SingleService.Data.Action;
+namespace Jt.SingleService.Service
 {
     public interface IMainCacheSvc
     {
@@ -20,7 +15,7 @@ namespace Jt.SingleService.Service.MainSvc
         /// 读取角色权限
         /// </summary>
         /// <returns></returns>
-        Task<List<RoleAction>> GetRoleActionsAsync();
+        Task<ApiResponse<List<RoleAction>>> GetRoleActionsAsync();
 
         /// <summary>
         /// 写入action
@@ -32,7 +27,7 @@ namespace Jt.SingleService.Service.MainSvc
         /// 读取action
         /// </summary>
         /// <returns></returns>
-        Task<List<Action>> GetActionsAsync();
+        Task<ApiResponse<List<Action>>> GetActionsAsync();
 
     }
 }

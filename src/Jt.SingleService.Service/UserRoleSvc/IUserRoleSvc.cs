@@ -1,12 +1,11 @@
-using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Data.Tables;
-
-namespace Jt.SingleService.Service.UserRoleSvc
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+namespace Jt.SingleService.Service
 {
     public interface IUserRoleSvc : IBaseSvc<UserRole>
     {
         Task BindUserRoleAsync(UserRoleDto userRoleDto);
 
-        Task<List<UserRole>> GetUserRolesAsync(string userId);
+        Task<ApiResponse<List<UserRole>>> GetUserRolesAsync(string userId);
     }
 }

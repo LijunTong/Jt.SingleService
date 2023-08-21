@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jt.SingleService.Core.Models
+﻿namespace Jt.SingleService.Core
 {
     public class Constrant
     {

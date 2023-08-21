@@ -1,9 +1,9 @@
-﻿using Jt.SingleService.Core.Cache;
-using Jt.SingleService.Lib.DI;
+﻿using Jt.SingleService.Core;
+using Jt.Common.Tool.DI;
 
-namespace Jt.SingleService.Service.CodeGeneratorSvc
+namespace Jt.SingleService.Service
 {
-    public class CodeGeneratorCacheSvc : BaseCacheSvc, ICodeGeneratorCacheSvc, ITransientInterface
+    public class CodeGeneratorCacheSvc : BaseCacheSvc, ICodeGeneratorCacheSvc, ITransientDIInterface
     {
         ICacheSvc _cacheSvc;
 

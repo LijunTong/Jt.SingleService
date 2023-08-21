@@ -1,20 +1,16 @@
-using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Service.MainSvc;
-using Jt.SingleService.Service.RoleActionSvc;
-using Jt.SingleService.Lib.DI;
-using Jt.SingleService.Lib.Utils;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class RoleActionSvc : BaseSvc<RoleAction>, IRoleActionSvc, ITransientInterface
+    public class RoleActionSvc : BaseSvc<RoleAction>, IRoleActionSvc, ITransientDIInterface
     {
         private readonly IRoleActionRepo _repository;
         private readonly IMainCacheSvc _mainCacheSvc;
-        private readonly CHelperSnowflake _snowflake;
+        private readonly IIDSvc _snowflake;
 
-        public RoleActionSvc(IRoleActionRepo repository, IMainCacheSvc mainCacheSvc, CHelperSnowflake snowflake) : base(repository)
+        public RoleActionSvc(IRoleActionRepo repository, IMainCacheSvc mainCacheSvc, IIDSvc snowflake) : base(repository)
         {
             _repository = repository;
             _mainCacheSvc = mainCacheSvc;
@@ -41,21 +37,21 @@ namespace Jt.SingleService.Service.UserSvc
                         Updater = roleActionDto.UserId
                     });
                 });
-               await _repository.InsertListAsync(roleActions);
-              await  _repository.SaveAsync();
+                await _repository.InsertListAsync(roleActions);
+                await _repository.SaveAsync();
             }
         }
 
-        public async Task<List<RoleAction>> GetRoleActionsAsync(string roleId)
+        public async Task<ApiResponse<List<RoleAction>>> GetRoleActionsAsync(string roleId)
         {
             var roleActions = await _repository.GetListAsync(x => x.RoleId == roleId);
-
-            return roleActions;
+            return ApiResponse<List<RoleAction>>.Succeed(roleActions);
         }
 
         public async Task LoadRoleActionsRedisAsync()
         {
-            await _mainCacheSvc.SetRoleActionsAsync(await GetAllListAsync());
+            var data = await GetAllListAsync();
+            await _mainCacheSvc.SetRoleActionsAsync(data.Data);
         }
     }
 }

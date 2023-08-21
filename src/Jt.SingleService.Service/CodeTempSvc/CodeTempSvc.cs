@@ -1,14 +1,12 @@
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Service.CodeTempSvc;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
 using MySqlConnector;
 using System.Data.Common;
-using Jt.SingleService.Lib.DI;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class CodeTempSvc : BaseSvc<CodeTemp>, ICodeTempSvc, ITransientInterface
+    public class CodeTempSvc : BaseSvc<CodeTemp>, ICodeTempSvc, ITransientDIInterface
     {
         private readonly ICodeTempRepo _repository;
 
@@ -17,18 +15,20 @@ namespace Jt.SingleService.Service.UserSvc
             _repository = repository;
         }
 
-        public async Task<List<CodeTemp>> GetListByUserIdAsync(string userId)
+        public async Task<ApiResponse<List<CodeTemp>>> GetListByUserIdAsync(string userId)
         {
-            return await _repository.GetListAsync(x => x.UserId == userId);
+            var data = await _repository.GetListAsync(x => x.UserId == userId && x.IsDel == 0);
+            return ApiResponse<List<CodeTemp>>.Succeed(data);
         }
 
-        public async Task<List<CodeTemp>> GetPageListByUserIdAsync(PagerReq pagerEntity, string userId)
+        public async Task<ApiResponse<PagerOutput<CodeTemp>>> GetPageListByUserIdAsync(PagerReq pagerEntity, string userId)
         {
-            return await _repository.GetListAsync(x => x.UserId == userId, pagerEntity);
+            var data = await base.GetPagerListAsync(x => x.UserId == userId, pagerEntity);
+            return data;
         }
 
 
-        public async Task<List<CodeTemp>> GetCodeTempsBySchemeAsync(string schemeId)
+        public async Task<ApiResponse<List<CodeTemp>>> GetCodeTempsBySchemeAsync(string schemeId)
         {
             string sql = @"SELECT t.* FROM code_scheme_detials AS d 
                 LEFT JOIN code_temp AS t
@@ -38,7 +38,8 @@ namespace Jt.SingleService.Service.UserSvc
             {
                 new MySqlParameter{ ParameterName = "@gen_scheme_id",Value = schemeId}
             };
-            return await _repository.GetListAsync(sql, dbParameter);
+            var data = await _repository.GetListAsync(sql, dbParameter);
+            return ApiResponse<List<CodeTemp>>.Succeed(data);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Jt.SingleService.Core.Cache
+﻿namespace Jt.SingleService.Core
 {
     public class BaseCacheSvc : IBaseCacheSvc
     {

@@ -1,11 +1,6 @@
-﻿using Jt.SingleService.Core.Cache;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Jt.SingleService.Core;
 
-namespace Jt.SingleService.Service.CodeGeneratorSvc
+namespace Jt.SingleService.Service
 {
     public interface ICodeGeneratorCacheSvc : IBaseCacheSvc
     {

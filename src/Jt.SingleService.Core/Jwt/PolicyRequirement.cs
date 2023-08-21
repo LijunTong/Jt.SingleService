@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Jt.SingleService.Core.Jwt
+namespace Jt.SingleService.Core
 {
-    public class PolicyRequirement: IAuthorizationRequirement
+    public class PolicyRequirement : IAuthorizationRequirement
     {
 
     }

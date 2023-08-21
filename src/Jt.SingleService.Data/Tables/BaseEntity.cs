@@ -1,12 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Jt.SingleService.Data.Tables
+namespace Jt.SingleService.Data
 {
     public class BaseEntity
     {
+        [Column("id")]
+        public string Id { get; set; }
+
+        [Column("creater")]
+        public string Creater { get; set; }
+
+        [Column("create_time")]
+        public DateTime CreateTime { get; set; }
+
+        [Column("updater")]
+        public string Updater { get; set; }
+
+        [Column("up_time")]
+        public DateTime UpTime { get; set; }
+
+        [Column("is_del")]
+        public int IsDel { get; set; }
+
     }
 }

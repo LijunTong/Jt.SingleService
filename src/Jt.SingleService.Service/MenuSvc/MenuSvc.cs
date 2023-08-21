@@ -1,20 +1,12 @@
-using Jt.SingleService.Core.Enums;
-using Jt.SingleService.Lib.Extensions;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Lib.Utils;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Service.ActionSvc;
-using Jt.SingleService.Service.MainSvc;
-using Jt.SingleService.Service.MenuSvc;
-using Jt.SingleService.Service.RoleSvc;
-using Jt.SingleService.Service.UserRoleSvc;
-using System.Reflection;
-using Action = Jt.SingleService.Data.Tables.Action;
-using Jt.SingleService.Lib.DI;
-
-namespace Jt.SingleService.Service.UserSvc
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
+using Jt.Common.Tool.Extension;
+using Jt.Common.Tool.Helper;
+using Action = Jt.SingleService.Data.Action;
+namespace Jt.SingleService.Service
 {
-    public class MenuSvc : BaseSvc<Menu>, IMenuSvc, ITransientInterface
+    public class MenuSvc : BaseSvc<Menu>, IMenuSvc, ITransientDIInterface
     {
         private readonly IMenuRepo _repository;
         private readonly IMenuCacheSvc _menuCacheSvc;
@@ -47,59 +39,66 @@ namespace Jt.SingleService.Service.UserSvc
             }
             else
             {
-                menu = CHelperObject.FillEmptyString(menu);
+                menu = menu.FillEmptyString();
                 await _repository.InsertAsync(menu);
                 await _repository.SaveAsync();
             }
         }
 
-        public async Task<List<Menu>> GetBackMenuAsync(string userId)
+        public async Task<ApiResponse<List<Menu>>> GetBackMenuAsync(string userId)
         {
-            var menus = await _repository.GetListAsync(x => x.Type == (int)EnumMenuType.Back);
+            // 这里把前后台菜单一起获取
+            var menus = await _repository.GetListAsync(x => x.IsDel == 0);
             var roles = await _roleSvc.GetRolesAsync(userId);
-            if (roles.Any(x => x.Code == EnumRole.Admin.ToString()))
+            if (roles.Data.Any(x => x.Code == EnumRole.Admin.ToString()))
             {
-                return await GetMenuTreeAsync("", menus);
+                var data1 = await GetMenuTreeAsync("", menus);
+                return ApiResponse<List<Menu>>.Succeed(data1);
             }
-            var roleIds = roles.Select(x => x.Id).ToList();
+            var roleIds = roles.Data.Select(x => x.Id).ToList();
             var userPermissions = await _roleActionRepo.GetListAsync(x => roleIds.Contains(x.RoleId));
-            var roleAction = userPermissions.Where(x => roles.Any(r => r.Id == x.RoleId) && x.Action == EnumAction.Display.ToString());//角色对应菜单展示的权限
+            var roleAction = userPermissions.Where(x => roles.Data.Any(r => r.Id == x.RoleId) && x.Action == EnumAction.Display.ToString());//角色对应菜单展示的权限
             menus = menus.Where(x => roleAction.Any(r => r.Controller == x.Controller || r.Controller == x.Name)).ToList();
-            return await GetMenuTreeAsync("", menus);
+            var data = await GetMenuTreeAsync("", menus);
+            return ApiResponse<List<Menu>>.Succeed(data);
         }
 
-        public async Task<List<string>> GetControllerAsync()
+        public async Task<ApiResponse<List<string>>> GetControllerAsync()
         {
-            return await _menuCacheSvc.GetControllerAsync();
+            var data = await _menuCacheSvc.GetControllerAsync();
+            return ApiResponse<List<string>>.Succeed(data);
         }
 
-        public async Task<List<Menu>> GetFrontMenuAsync()
+        public async Task<ApiResponse<List<Menu>>> GetFrontMenuAsync()
         {
             var menus = await _repository.GetListAsync(x => x.Type == (int)EnumMenuType.Front);
-            return await GetMenuTreeAsync("", menus);
+            var data = await GetMenuTreeAsync("", menus);
+            return ApiResponse<List<Menu>>.Succeed(data);
         }
 
-        public async Task<Menu> GetMenuAsync(string path)
+        public async Task<ApiResponse<Menu>> GetMenuAsync(string path)
         {
-            return await _repository.GetFirstAsync(x => x.Path == path);
+            var data = await _repository.GetFirstAsync(x => x.Path == path);
+            return ApiResponse<Menu>.Succeed(data);
         }
 
-        public async Task<List<Menu>> GetMenuTreeWithActionAsync()
+        public async Task<ApiResponse<List<Menu>>> GetMenuTreeWithActionAsync()
         {
-            return await GetMenuTreeWithActionAsync("");
+            var data = await GetMenuTreeWithActionAsync("");
+            return ApiResponse<List<Menu>>.Succeed(data);
         }
 
         private async Task<List<Menu>> GetMenuTreeWithActionAsync(string parentId)
         {
-            List<Menu> roots = (await _repository.GetListAsync(x => x.ParentId == parentId)).OrderBy(x => x.SortIndex).ToList();
+            List<Menu> roots = (await _repository.GetListAsync(x => x.ParentId == parentId && x.IsDel == 0)).OrderBy(x => x.SortIndex).ToList();
             foreach (var item in roots)
             {
-                item.Actions = await _actionSvc.GetActionsAsync(item.Controller);
+                item.Actions = (await _actionSvc.GetActionsAsync(item.Controller)).Data;
                 item.Actions.Insert(0, new Action
                 {
                     Controller = (item.Controller == "无" || string.IsNullOrWhiteSpace(item.Controller) ? item.Name : item.Controller),
                     Name = EnumAction.Display.ToString(),
-                    Text = CHelperEnum.GetEnumDesp(typeof(EnumAction), (int)EnumAction.Display)
+                    Text = EnumHelper.GetEnumDesp(typeof(EnumAction), (int)EnumAction.Display)
                 });
                 item.Children = await GetMenuTreeWithActionAsync(item.Id);
             }
@@ -109,7 +108,7 @@ namespace Jt.SingleService.Service.UserSvc
         public async Task InitControllerAsync(Type type)
         {
             List<string> controllers = new List<string>();
-            var controllerTypes = CHelperAssembly.GetDerived(AppDomain.CurrentDomain.GetAssemblies(), type);
+            var controllerTypes = AssemblyHelper.GetDerived(AppDomain.CurrentDomain.GetAssemblies(), type);
             controllerTypes.ForEach(x => controllers.Add(x.Name));
             await _menuCacheSvc.SetControllerAsync(controllers);
         }
@@ -120,20 +119,22 @@ namespace Jt.SingleService.Service.UserSvc
             await _repository.SaveAsync();
         }
 
-        public async Task<bool> IsExistsMenuAsync(Menu menu)
+        public async Task<ApiResponse<bool>> IsExistsMenuAsync(Menu menu)
         {
             var existsMenu = await _repository.GetMenuByNameAsync(menu.Name);
             if (menu.Id.IsNotNullOrWhiteSpace() && existsMenu != null && existsMenu.Id == menu.Id)
             {
-                return false;
+                return ApiResponse<bool>.Succeed(false);
             }
-            return existsMenu != null;
+
+            var data = existsMenu != null;
+            return ApiResponse<bool>.Succeed(data);
         }
 
         public async Task UpdateMenuAsync(Menu menu)
         {
-           await _repository.UpdateAsync(menu);
-          await  _repository.SaveAsync();
+            await _repository.UpdateAsync(menu);
+            await _repository.SaveAsync();
         }
 
         private async Task<List<Menu>> GetMenuTreeAsync(string parentId, List<Menu> menus)

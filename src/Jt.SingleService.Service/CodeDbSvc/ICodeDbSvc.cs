@@ -1,12 +1,11 @@
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Data.Tables;
-
-namespace Jt.SingleService.Service.CodeDbSvc
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+namespace Jt.SingleService.Service
 {
     public interface ICodeDbSvc : IBaseSvc<CodeDb>
     {
-        Task<List<CodeDb>> GetListByUserIdAsync(string userId);
+        Task<ApiResponse<List<CodeDb>>> GetListByUserIdAsync(string userId);
 
-        Task<List<CodeDb>> GetPageListByUserIdAsync(PagerReq pagerEntity, string userId);
+        Task<ApiResponse<PagerOutput<CodeDb>>> GetPageListByUserIdAsync(PagerReq pagerEntity, string userId);
     }
 }

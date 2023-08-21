@@ -1,9 +1,9 @@
-﻿using Jt.SingleService.Core.Cache;
-using Jt.SingleService.Lib.DI;
+﻿using Jt.SingleService.Core;
+using Jt.Common.Tool.DI;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class UserCacheSvc: BaseCacheSvc, IUserCacheSvc, ITransientInterface
+    public class UserCacheSvc : BaseCacheSvc, IUserCacheSvc, ITransientDIInterface
     {
         ICacheSvc _cacheSvc;
 

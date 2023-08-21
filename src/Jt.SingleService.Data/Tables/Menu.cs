@@ -1,12 +1,10 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Jt.SingleService.Data.Tables
+namespace Jt.SingleService.Data
 {
     [Table("menu")]
     public class Menu : BaseEntity
     {
-        [Column("id")]
-        public string Id { get; set; }
         [Column("controller")]
         public string Controller { get; set; }
 
@@ -39,18 +37,6 @@ namespace Jt.SingleService.Data.Tables
 
         [Column("parent_id")]
         public string ParentId { get; set; }
-
-        [Column("creater")]
-        public string Creater { get; set; }
-
-        [Column("create_time")]
-        public DateTime CreateTime { get; set; }
-
-        [Column("updater")]
-        public string Updater { get; set; }
-
-        [Column("up_time")]
-        public DateTime UpTime { get; set; }
 
         [NotMapped]
         public List<Menu> Children { get; set; }

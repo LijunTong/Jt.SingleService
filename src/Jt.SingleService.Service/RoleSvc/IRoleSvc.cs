@@ -1,11 +1,11 @@
-using Jt.SingleService.Data.Tables;
-
-namespace Jt.SingleService.Service.RoleSvc
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+namespace Jt.SingleService.Service
 {
     public interface IRoleSvc : IBaseSvc<Role>
     {
-        Task<Role> GetRoleAsync(string code);
+        Task<ApiResponse<Role>> GetRoleAsync(string code);
 
-        Task<List<Role>> GetRolesAsync(string userId);
+        Task<ApiResponse<List<Role>>> GetRolesAsync(string userId);
     }
 }

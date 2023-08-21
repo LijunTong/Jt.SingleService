@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
-namespace Jt.SingleService.Core.Enums
+namespace Jt.SingleService.Core
 {
     public enum EnumAction
     {

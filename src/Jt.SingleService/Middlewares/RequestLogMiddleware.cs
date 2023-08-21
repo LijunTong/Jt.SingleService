@@ -1,19 +1,10 @@
-﻿using Jt.SingleService.Lib.Extensions;
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Core.Options;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+﻿using Jt.SingleService.Core;
+using Jt.Common.Tool.Extension;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Net.Mime;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Jt.SingleService.Core.Middlewares
+namespace Jt.SingleService
 {
     public class RequestLogMiddleware
     {
@@ -47,7 +38,7 @@ namespace Jt.SingleService.Core.Middlewares
                 Url = req.Path.ToString(),
                 Headers = req.Headers.ToDictionary(k => k.Key, v => string.Join(";", v.Value.ToList())),
                 Method = req.Method,
-                QueryString =  req.QueryString.Value
+                QueryString = req.QueryString.Value
             };
 
             if (req.ContentLength != null && req.ContentLength.Value > 0)
@@ -80,7 +71,7 @@ namespace Jt.SingleService.Core.Middlewares
             stopwatch.Stop();
             log.ExcuteTime = stopwatch.ElapsedMilliseconds;
 
-            _logger.LogInformation(log.ToJosn());
+            _logger.LogInformation(log.ToJson());
         }
     }
 

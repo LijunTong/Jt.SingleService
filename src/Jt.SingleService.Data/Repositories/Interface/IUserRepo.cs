@@ -1,7 +1,4 @@
-using Jt.SingleService.Data.Dto.User.Req;
-using Jt.SingleService.Data.Tables;
-
-namespace Jt.SingleService.Data.Repositories.Interface
+namespace Jt.SingleService.Data
 {
     public interface IUserRepo : IBaseRepo<User>
     {

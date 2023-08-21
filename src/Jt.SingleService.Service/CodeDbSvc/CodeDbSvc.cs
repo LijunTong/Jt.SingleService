@@ -1,12 +1,10 @@
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Service.CodeDbSvc;
-using Jt.SingleService.Lib.DI;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class CodeDbSvc : BaseSvc<CodeDb>, ICodeDbSvc, ITransientInterface
+    public class CodeDbSvc : BaseSvc<CodeDb>, ICodeDbSvc, ITransientDIInterface
     {
         private readonly ICodeDbRepo _repository;
 
@@ -15,15 +13,16 @@ namespace Jt.SingleService.Service.UserSvc
             _repository = repository;
         }
 
-        public async Task<List<CodeDb>> GetListByUserIdAsync(string userId)
+        public async Task<ApiResponse<List<CodeDb>>> GetListByUserIdAsync(string userId)
         {
-            return await _repository.GetListAsync(x => x.UserId == userId);
-
+            var data = await _repository.GetListAsync(x => x.UserId == userId);
+            return ApiResponse<List<CodeDb>>.Succeed(data);
         }
 
-        public async Task<List<CodeDb>> GetPageListByUserIdAsync(PagerReq pagerEntity, string userId)
+        public async Task<ApiResponse<PagerOutput<CodeDb>>> GetPageListByUserIdAsync(PagerReq pagerEntity, string userId)
         {
-            return await _repository.GetListAsync(x => x.UserId == userId, pagerEntity);
+            var data = await base.GetPagerListAsync(x => x.UserId == userId, pagerEntity);
+            return data;
         }
     }
 }

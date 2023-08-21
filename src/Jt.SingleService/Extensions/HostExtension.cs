@@ -1,6 +1,4 @@
-﻿using Jt.SingleService.Service.ActionSvc;
-using Jt.SingleService.Service.ControllerSvc;
-using Jt.SingleService.Service.RoleActionSvc;
+﻿using Jt.SingleService.Service;
 
 namespace Jt.SingleService.Extensions
 {
@@ -24,6 +22,6 @@ namespace Jt.SingleService.Extensions
             return host;
         }
 
-        
+
     }
 }

@@ -1,11 +1,10 @@
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Service.RoleSvc;
-using Jt.SingleService.Lib.DI;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class RoleSvc : BaseSvc<Role>, IRoleSvc, ITransientInterface
+    public class RoleSvc : BaseSvc<Role>, IRoleSvc, ITransientDIInterface
     {
         private readonly IRoleRepo _repository;
         private readonly IUserRoleRepo _userRoleRepo;
@@ -16,16 +15,18 @@ namespace Jt.SingleService.Service.UserSvc
             _userRoleRepo = userRoleRepo;
         }
 
-        public Task<Role> GetRoleAsync(string code)
+        public async Task<ApiResponse<Role>> GetRoleAsync(string code)
         {
-            return _repository.GetFirstAsync(x => x.Code == code);
+            var data = await _repository.GetFirstAsync(x => x.Code == code);
+            return ApiResponse<Role>.Succeed(data);
         }
 
-        public async Task<List<Role>> GetRolesAsync(string userId)
+        public async Task<ApiResponse<List<Role>>> GetRolesAsync(string userId)
         {
             var userRoles = await _userRoleRepo.GetListAsync(x => x.UserId == userId);
             var roleIds = userRoles.Select(x => x.RoleId);
-            return await _repository.GetListAsync(x => roleIds.Contains(x.Id));
+            var data = await _repository.GetListAsync(x => roleIds.Contains(x.Id));
+            return ApiResponse<List<Role>>.Succeed(data);
         }
     }
 }

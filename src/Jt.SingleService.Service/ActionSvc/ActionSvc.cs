@@ -1,42 +1,41 @@
-using Jt.SingleService.Core.Attributes;
-using Jt.SingleService.Core.Enums;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Lib.DI;
-using Jt.SingleService.Lib.Utils;
-using Jt.SingleService.Service.ActionSvc;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
+using Jt.Common.Tool.Helper;
 using System.Reflection;
-using Action = Jt.SingleService.Data.Tables.Action;
+using Action = Jt.SingleService.Data.Action;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class ActionSvc : BaseSvc<Action>, IActionSvc, ITransientInterface
+    public class ActionSvc : BaseSvc<Action>, IActionSvc, ITransientDIInterface
     {
         private readonly IActionRepo _repository;
-        private readonly CHelperSnowflake _snowflake;
+        private readonly IIDSvc _snowflake;
 
-        public ActionSvc(IActionRepo repository, CHelperSnowflake snowflake) : base(repository)
+        public ActionSvc(IActionRepo repository, IIDSvc snowflake) : base(repository)
         {
             _repository = repository;
             _snowflake = snowflake;
         }
 
-        public async Task<List<Action>> GetActionsAsync(string controller)
+        public async Task<ApiResponse<List<Action>>> GetActionsAsync(string controller)
         {
-            return await _repository.GetListAsync(x => x.Controller == controller);
+            var data = await _repository.GetListAsync(x => x.Controller == controller);
+            return ApiResponse<List<Action>>.Succeed(data);
         }
 
         public async Task InitActionsAsync()
         {
             Assembly[] assembly = AppDomain.CurrentDomain.GetAssemblies();
-            var types = CHelperAssembly.GetTypesByAttribute(assembly, typeof(AuthorControllerAttribute));
+            var types = AssemblyHelper.GetTypesByAttribute(assembly, typeof(AuthorControllerAttribute));
+
             if (types != null)
             {
-                var existsActions = await GetAllListAsync();
+                var existsActions = (await GetAllListAsync()).Data;
                 List<Action> addActions = new List<Action>();
                 foreach (var item in types)
                 {
-                    var methods = CHelperAssembly.GetMethodInfosWithAttribute(item, typeof(ActionAttribute));
+                    var methods = AssemblyHelper.GetMethodInfosWithAttribute(item, typeof(ActionAttribute));
                     foreach (var method in methods)
                     {
                         if (!existsActions.Any(x => x.Controller == item.Name && x.Name == method.Name))
@@ -61,18 +60,21 @@ namespace Jt.SingleService.Service.UserSvc
                     }
                 }
                 List<Action> delActions = new List<Action>();
+                List<MethodInfo> methhods = new List<MethodInfo>();
+                foreach (var item in types)
+                {
+                    var methods = AssemblyHelper.GetMethodInfosWithAttribute(item, typeof(ActionAttribute));
+                    foreach (var method in methods)
+                    {
+                        methhods.Add(method);
+
+                    }
+                }
                 foreach (var action in existsActions)
                 {
-                    foreach (var item in types)
+                    if (!methhods.Any(x => x.DeclaringType.Name == action.Controller && x.Name == action.Name))
                     {
-                        var methods = CHelperAssembly.GetMethodInfosWithAttribute(item, typeof(ActionAttribute));
-                        foreach (var method in methods)
-                        {
-                            if (!existsActions.Any(x => x.Controller == item.Name && x.Name == method.Name))
-                            {
-                                delActions.Add(action);
-                            }
-                        }
+                        delActions.Add(action);
                     }
                 }
 

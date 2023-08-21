@@ -1,9 +1,8 @@
-using Jt.SingleService.Data.Tables;
-
-namespace Jt.SingleService.Service.CodeSchemeDetialsSvc
+using Jt.SingleService.Data;
+namespace Jt.SingleService.Service
 {
     public interface ICodeSchemeDetialsSvc : IBaseSvc<CodeSchemeDetials>
     {
-        
+
     }
 }

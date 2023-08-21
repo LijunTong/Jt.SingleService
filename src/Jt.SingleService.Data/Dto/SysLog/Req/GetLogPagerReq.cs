@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jt.SingleService.Lib.DI
+namespace Jt.SingleService.Data
 {
-    public interface IScopedInterface
+    public class GetLogPagerReq : PagerReq
     {
+        public int Type { get; set; }
     }
 }

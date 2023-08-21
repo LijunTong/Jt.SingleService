@@ -1,12 +1,10 @@
-using Jt.SingleService.Data.Dto;
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Repositories.Interface;
-using Jt.SingleService.Service.SysLogSvc;
-using Jt.SingleService.Lib.DI;
+using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.Common.Tool.DI;
 
-namespace Jt.SingleService.Service.UserSvc
+namespace Jt.SingleService.Service
 {
-    public class SysLogSvc : BaseSvc<SysLog>, ISysLogSvc, ITransientInterface
+    public class SysLogSvc : BaseSvc<SysLog>, ISysLogSvc, ITransientDIInterface
     {
         private readonly ISysLogRepo _repository;
 
@@ -15,34 +13,46 @@ namespace Jt.SingleService.Service.UserSvc
             _repository = repository;
         }
 
-        public async Task<List<ActionStatsDto>> GetActionStatsAsync()
+        public async Task<ApiResponse<List<ActionStatsDto>>> GetActionStatsAsync()
         {
-            return await _repository.GetActionStatsAsync();
+            var data = await _repository.GetActionStatsAsync();
+            return ApiResponse<List<ActionStatsDto>>.Succeed(data);
         }
 
-        public async Task<List<KeyValueDto<long>>> GetIpStatsAsync()
+        public async Task<ApiResponse<List<KeyValueDto<long>>>> GetIpStatsAsync()
         {
-            return await _repository.GetIpStatsAsync();
+            var data = await _repository.GetIpStatsAsync();
+            return ApiResponse<List<KeyValueDto<long>>>.Succeed(data);
         }
 
-        public async Task<List<ActionStatsDto>> GetTodayActionStatsAsync(DateTime dateTime)
+        public async Task<ApiResponse<PagerOutput<SysLog>>> GetLogsPagerListAsync(GetLogPagerReq req)
         {
-            return await _repository.GetTodayActionStatsAsync(dateTime);
+            var data = await base.GetPagerListAsync(x => x.Type == req.Type, req);
+            return data;
         }
 
-        public async Task<List<KeyValueDto<long>>> GetTodayIpStatsAsync(DateTime dateTime)
+        public async Task<ApiResponse<List<ActionStatsDto>>> GetTodayActionStatsAsync(DateTime dateTime)
         {
-            return await _repository.GetTodayIpStatsAsync(dateTime);
+            var data = await _repository.GetTodayActionStatsAsync(dateTime);
+            return ApiResponse<List<ActionStatsDto>>.Succeed(data);
         }
 
-        public async Task<long> GetTodayTotalStatsAsync(DateTime dateTime)
+        public async Task<ApiResponse<List<KeyValueDto<long>>>> GetTodayIpStatsAsync(DateTime dateTime)
         {
-            return await _repository.GetTodayTotalStatsAsync(dateTime);
+            var data = await _repository.GetTodayIpStatsAsync(dateTime);
+            return ApiResponse<List<KeyValueDto<long>>>.Succeed(data);
         }
 
-        public async Task<long> GetTotalStatsAsync()
+        public async Task<ApiResponse<long>> GetTodayTotalStatsAsync(DateTime dateTime)
         {
-            return await _repository.GetTotalStatsAsync();
+            var data = await _repository.GetTodayTotalStatsAsync(dateTime);
+            return ApiResponse<long>.Succeed(data);
+        }
+
+        public async Task<ApiResponse<long>> GetTotalStatsAsync()
+        {
+            var data = await _repository.GetTotalStatsAsync();
+            return ApiResponse<long>.Succeed(data);
         }
     }
 }

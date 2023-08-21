@@ -1,16 +1,10 @@
-﻿using Jt.SingleService.Lib.DI;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Jt.Common.Tool.DI;
 using Quartz;
 using Quartz.Spi;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Jt.SingleService.Core.Quartz
+namespace Jt.SingleService.Core
 {
-    public class DiFactory : IJobFactory, ITransientInterface
+    public class DiFactory : IJobFactory, ITransientDIInterface
     {
         private readonly IServiceProvider _serviceProvider;
 

@@ -1,27 +1,23 @@
-﻿using Jt.SingleService.Core.Enums;
-using Jt.SingleService.Lib.Extensions;
-using Jt.SingleService.Core.Models;
-using Jt.SingleService.Data.Tables;
+﻿using Jt.SingleService.Core;
+using Jt.SingleService.Data;
+using Jt.SingleService.Service;
+using Jt.Common.Tool.Extension;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
-using Jt.SingleService.Service.UserSvc;
-using Jt.SingleService.Core.Jwt;
-using Jt.SingleService.Lib.Utils;
 
-namespace Jt.SingleService.Core.Filters
+namespace Jt.SingleService
 {
     public class ExceptionFilterAttribute : Attribute, IExceptionFilter
     {
         private ILogger<ExceptionFilterAttribute> _logger;
         private ISysLogCacheSvc _sysLogCacheSvc;
         private JwtHelper _jwtHelper;
-        private readonly CHelperSnowflake _snowflake;
+        private readonly IIDSvc _snowflake;
 
         //构造注入日志组件
-        public ExceptionFilterAttribute(ILogger<ExceptionFilterAttribute> logger, JwtHelper jwtHelper, ISysLogCacheSvc sysLogCacheSvc, CHelperSnowflake snowflake)
+        public ExceptionFilterAttribute(ILogger<ExceptionFilterAttribute> logger, JwtHelper jwtHelper, ISysLogCacheSvc sysLogCacheSvc, IIDSvc snowflake)
         {
             _logger = logger;
             _jwtHelper = jwtHelper;
@@ -38,7 +34,7 @@ namespace Jt.SingleService.Core.Filters
             if (context.Exception is ValidationException)
             {
                 //Model数据校验失败，返回200
-                var result = ApiResponse<bool>.GetFail(ApiReturnCode.SystemError, context.Exception.Message);
+                var result = ApiResponse<object>.Fail(ApiReturnCode.SystemError, context.Exception.Message);
                 context.Result = new JsonResult(result);
             }
             else
@@ -52,8 +48,9 @@ namespace Jt.SingleService.Core.Filters
                     {
                         param += $"{item.Name},{item.ParameterType};";
                     }
-                    int userId = 0;
-                    var user = _jwtHelper.UserAsync<JwtUser>(context.HttpContext.Request);
+
+                    string userId = "";
+                    var user = _jwtHelper.User<JwtUser>(context.HttpContext.Request);
                     if (user != null)
                     {
                         userId = user.Id;
@@ -66,7 +63,7 @@ namespace Jt.SingleService.Core.Filters
                         Title = msg,
                         Content = context.Exception.Message,
                         LogTime = DateTime.Now,
-                        UserId = "",
+                        UserId = userId,
                         Controller = caDes.ControllerName,
                         Action = caDes.ActionName,
                         RemoteAddress = address,
@@ -77,7 +74,7 @@ namespace Jt.SingleService.Core.Filters
                         Updater = "LogAction"
                     };
                     await _sysLogCacheSvc.PushLogAsync(sysLog);
-                    _logger.LogError(context.Exception, sysLog.ToJosn());
+                    _logger.LogError(context.Exception, sysLog.ToJson());
                 }
                 catch (Exception ex)
                 {
@@ -86,7 +83,7 @@ namespace Jt.SingleService.Core.Filters
 
                 context.ExceptionHandled = true;
 
-                var result = ApiResponse<bool>.GetFail(ApiReturnCode.SystemError, "请求异常");
+                var result = ApiResponse<object>.Fail(ApiReturnCode.SystemError, "请求异常");
                 context.Result = new JsonResult(result);
             }
         }

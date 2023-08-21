@@ -1,32 +1,31 @@
-﻿using Jt.SingleService.Lib.DI;
-using Jt.SingleService.Lib.Utils;
+﻿using Jt.SingleService.Core;
+using Jt.Common.Tool.DI;
+using Jt.Common.Tool.Helper;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Jt.SingleService.Service.FileSvc
+namespace Jt.SingleService.Service
 {
-    public class FileSvc : IFileSvc, ITransientInterface
+    public class FileSvc : IFileSvc, ITransientDIInterface
     {
         private const string BaseDir = "Files";
         private const string AvatarDir = "Avatars";
 
-        public async Task<string> UploadAvatarAsync(IFormFile file, string fileName)
+        public async Task<ApiResponse<string>> UploadAvatarAsync(IFormFile file, string fileName)
         {
-            return await UploadFileAsync(file, Path.Combine(AvatarDir, fileName));
+            var data = await UploadFileAsync(file, Path.Combine(AvatarDir, fileName));
+            return data;
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file, string fileName)
+        public async Task<ApiResponse<string>> UploadFileAsync(IFormFile file, string fileName)
         {
-            string filepath = CHelperAppDomain.CombineWithCreate(BaseDir, fileName);
+            string filepath = AppDomainHelper.CreateDirectoryInBaseDirectory(BaseDir, fileName);
             using (var fiLeStream = new FileStream(filepath, FileMode.Create))
             {
                 await file.CopyToAsync(fiLeStream);
             }
-            return Path.Combine(BaseDir, fileName);
+
+            var data = Path.Combine(BaseDir, fileName);
+            return ApiResponse<string>.Succeed(data);
         }
     }
 }

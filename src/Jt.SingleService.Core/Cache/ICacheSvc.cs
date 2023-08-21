@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Jt.SingleService.Core.Cache
+﻿namespace Jt.SingleService.Core
 {
     /// <summary>
     /// 缓存服务接口

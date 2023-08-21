@@ -1,8 +1,4 @@
-using Jt.SingleService.Data.Tables;
-using Jt.SingleService.Data.Repositories.Dto;
-using Jt.SingleService.Data.Dto;
-
-namespace Jt.SingleService.Data.Repositories.Interface
+namespace Jt.SingleService.Data
 {
     public interface ICodeSchemeDetialsRepo : IBaseRepo<CodeSchemeDetials>
     {
