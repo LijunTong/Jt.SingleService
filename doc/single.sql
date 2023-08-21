@@ -5,17 +5,82 @@
  Source Server Type    : MySQL
  Source Server Version : 50743
  Source Host           : 192.168.110.128:3306
- Source Schema         : cms
+ Source Schema         : single
 
  Target Server Type    : MySQL
  Target Server Version : 50743
  File Encoding         : 65001
 
- Date: 21/08/2023 22:05:16
+ Date: 21/08/2023 22:48:58
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for action
+-- ----------------------------
+DROP TABLE IF EXISTS `action`;
+CREATE TABLE `action`  (
+  `id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'id',
+  `controller` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '控制器',
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'action',
+  `text` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '文本',
+  `creater` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '添加人',
+  `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
+  `updater` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '最后修改人',
+  `up_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+  `is_del` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of action
+-- ----------------------------
+INSERT INTO `action` VALUES ('16461658950272000', 'ArticleController', 'Insert', '新增', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 1);
+INSERT INTO `action` VALUES ('16461658950288384', 'ArticleController', 'Update', '修改', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 1);
+INSERT INTO `action` VALUES ('16461658950288385', 'ArticleController', 'Delete', '删除', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 1);
+INSERT INTO `action` VALUES ('16461658950288386', 'ArticleController', 'ListPager', '列表', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 1);
+INSERT INTO `action` VALUES ('16461658950288387', 'ArticleController', 'AddArticle', '发布文章', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 1);
+INSERT INTO `action` VALUES ('16461658950288388', 'CodeDbController', 'Insert', '新增', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950288389', 'CodeDbController', 'Update', '修改', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950288390', 'CodeDbController', 'Delete', '删除', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950288391', 'CodeDbController', 'ListPager', '列表', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950304768', 'CodeGeneratorController', 'SetDb', '连接', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950304769', 'CodeGeneratorController', 'CodeGenerator', '生成', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950304770', 'CodeGenSchemeController', 'Insert', '新增', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950304771', 'CodeGenSchemeController', 'Update', '修改', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950304772', 'CodeGenSchemeController', 'Delete', '删除', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950304773', 'CodeGenSchemeController', 'ListPager', '列表', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950304774', 'CodeTempController', 'Insert', '新增', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950304775', 'CodeTempController', 'Update', '修改', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950304776', 'CodeTempController', 'Delete', '删除', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950304777', 'CodeTempController', 'ListPager', '列表', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950304778', 'ColumnController', 'Insert', '新增', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 1);
+INSERT INTO `action` VALUES ('16461658950304779', 'ColumnController', 'Update', '修改', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 1);
+INSERT INTO `action` VALUES ('16461658950304780', 'ColumnController', 'Delete', '删除', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 1);
+INSERT INTO `action` VALUES ('16461658950304781', 'ColumnController', 'ListPager', '列表', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 1);
+INSERT INTO `action` VALUES ('16461658950321152', 'MenuController', 'Insert', '新增', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321153', 'MenuController', 'Update', '修改', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321154', 'MenuController', 'Delete', '删除', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321155', 'MenuController', 'ListPager', '列表', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321156', 'MenuController', 'InitController', '更新权限数', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321157', 'RoleController', 'Insert', '新增', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321158', 'RoleController', 'Update', '修改', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321159', 'RoleController', 'Delete', '删除', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321160', 'RoleController', 'ListPager', '列表', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321161', 'RoleController', 'BindRoleActions', '分配权限', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321162', 'SysLogController', 'Insert', '新增', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321163', 'SysLogController', 'Update', '修改', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321164', 'SysLogController', 'Delete', '删除', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950321165', 'SysLogController', 'ListPager', '列表', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950337536', 'UserController', 'Insert', '新增', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950337537', 'UserController', 'Update', '修改', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950337538', 'UserController', 'Delete', '删除', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950337539', 'UserController', 'ListPager', '列表', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950337540', 'UserController', 'EditPassword', '修改密码', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950337541', 'UserController', 'BindUserRole', '分配角色', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
+INSERT INTO `action` VALUES ('16461658950337542', 'UserController', 'UpdateAvatar', '修改', '系统', '2023-08-21 22:25:27', '系统', '2023-08-21 22:25:27', 0);
 
 -- ----------------------------
 -- Table structure for code_db
@@ -39,7 +104,7 @@ CREATE TABLE `code_db`  (
 -- Records of code_db
 -- ----------------------------
 INSERT INTO `code_db` VALUES ('16235190598550528', 'framework', 'MySql', 'Server=192.168.159.128;Database=framework;Uid=root;Pwd=mysqlpassword;', '1', '1', '2023-03-14 22:49:56', '1', '2023-08-20 15:54:22', 1);
-INSERT INTO `code_db` VALUES ('16459857586439168', 'cms', 'MySql', 'Server=192.168.110.128;Database=cms;Uid=root;Pwd=mysqlpwd;', '1', '1', '2023-08-20 15:53:01', '1', '2023-08-20 15:54:20', 0);
+INSERT INTO `code_db` VALUES ('16459857586439168', 'cms', 'MySql', 'Server=192.168.110.128;Database=cms;Uid=root;Pwd=mysqlpwd;', '1', '1', '2023-08-20 15:53:01', '1', '2023-08-21 22:34:18', 0);
 
 -- ----------------------------
 -- Table structure for code_gen_scheme
@@ -169,8 +234,8 @@ INSERT INTO `controller` VALUES ('16235134270080003', 'RoleController', '系统'
 INSERT INTO `controller` VALUES ('16235134270080004', 'SysLogController', '系统', '2023-03-14 21:52:38', '系统', '2023-03-14 21:52:38', 0);
 INSERT INTO `controller` VALUES ('16235134270080005', 'UserController', '系统', '2023-03-14 21:52:38', '系统', '2023-03-14 21:52:38', 0);
 INSERT INTO `controller` VALUES ('16236574098310144', 'FileController', '系统', '2023-03-15 22:17:18', '系统', '2023-03-15 22:17:18', 1);
-INSERT INTO `controller` VALUES ('16458441573860352', 'ArticleController', '系统', '2023-08-19 15:52:34', '系统', '2023-08-19 15:52:34', 0);
-INSERT INTO `controller` VALUES ('16458441573860353', 'ColumnController', '系统', '2023-08-19 15:52:34', '系统', '2023-08-19 15:52:34', 0);
+INSERT INTO `controller` VALUES ('16458441573860352', 'ArticleController', '系统', '2023-08-19 15:52:34', '系统', '2023-08-19 15:52:34', 1);
+INSERT INTO `controller` VALUES ('16458441573860353', 'ColumnController', '系统', '2023-08-19 15:52:34', '系统', '2023-08-19 15:52:34', 1);
 
 -- ----------------------------
 -- Table structure for menu
@@ -374,6 +439,25 @@ INSERT INTO `sys_log` VALUES ('16459890187011072', 1, '列表', '/CodeGenScheme/
 INSERT INTO `sys_log` VALUES ('16459890352702464', 1, '连接', '/CodeGenerator/SetDb POST', '2023-08-20 16:26:20', '1', '0.0.0.1', 'CodeGenerator', 'SetDb', '{\"dbType\":\"MySql\",\"connectString\":\"Server=192.168.110.128;Database=cms;Uid=root;Pwd=mysqlpwd;\"}', 'LogAction', '2023-08-20 16:26:20', 'LogAction', '2023-08-20 16:26:20', 0);
 INSERT INTO `sys_log` VALUES ('16459893003650048', 1, '连接', '/CodeGenerator/SetDb POST', '2023-08-20 16:29:02', '1', '0.0.0.1', 'CodeGenerator', 'SetDb', '{\"dbType\":\"MySql\",\"connectString\":\"Server=192.168.110.128;Database=cms;Uid=root;Pwd=mysqlpwd;\"}', 'LogAction', '2023-08-20 16:29:02', 'LogAction', '2023-08-20 16:29:02', 0);
 INSERT INTO `sys_log` VALUES ('16459893218690048', 1, '生成', '/CodeGenerator/CodeGenerator POST', '2023-08-20 16:29:15', '1', '0.0.0.1', 'CodeGenerator', 'CodeGenerator', '{\"codeTempParams\":{\"CodeSchemeId\":\"16235209982116864\",\"TableName\":\"action\",\"ClassName\":\"Action\",\"DbFieldInfos\":[{\"FieldName\":\"id\",\"FieldModelName\":\"Id\",\"FieldModelNameCamel\":\"id\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"id\",\"DefaultValue\":null},{\"FieldName\":\"controller\",\"FieldModelName\":\"Controller\",\"FieldModelNameCamel\":\"controller\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"控制器\",\"DefaultValue\":\"\"},{\"FieldName\":\"name\",\"FieldModelName\":\"Name\",\"FieldModelNameCamel\":\"name\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"action\",\"DefaultValue\":\"\"},{\"FieldName\":\"text\",\"FieldModelName\":\"Text\",\"FieldModelNameCamel\":\"text\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"文本\",\"DefaultValue\":\"\"},{\"FieldName\":\"creater\",\"FieldModelName\":\"Creater\",\"FieldModelNameCamel\":\"creater\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"添加人\",\"DefaultValue\":\"\"},{\"FieldName\":\"create_time\",\"FieldModelName\":\"CreateTime\",\"FieldModelNameCamel\":\"createTime\",\"FieldDbType\":\"datetime\",\"FieldModelType\":\"DateTime\",\"FieldLength\":0,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"添加时间\",\"DefaultValue\":\"CURRENT_TIMESTAMP\"},{\"FieldName\":\"updater\",\"FieldModelName\":\"Updater\",\"FieldModelNameCamel\":\"updater\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"最后修改人\",\"DefaultValue', 'LogAction', '2023-08-20 16:29:15', 'LogAction', '2023-08-20 16:29:15', 0);
+INSERT INTO `sys_log` VALUES ('16461659208680448', 1, '列表', '/User/listPager POST', '2023-08-21 22:25:42', '1', '0.0.0.1', 'User', 'ListPager', '{\"pagerReq\":{\"UserName\":null,\"Page\":1,\"Size\":10,\"Total\":0,\"Data\":null}}', 'LogAction', '2023-08-21 22:25:42', 'LogAction', '2023-08-21 22:25:42', 0);
+INSERT INTO `sys_log` VALUES ('16461659213595648', 2, '/User/listPager POST', 'Table \'single.user_follow\' doesn\'t exist', '2023-08-21 22:25:43', '1', '0.0.0.1', 'User', 'ListPager', 'pagerReq,Jt.SingleService.Data.GetPagerListReq;', 'LogAction', '2023-08-21 22:25:43', 'LogAction', '2023-08-21 22:25:43', 0);
+INSERT INTO `sys_log` VALUES ('16461663125996544', 1, '列表', '/User/listPager POST', '2023-08-21 22:29:42', '1', '0.0.0.1', 'User', 'ListPager', '{\"pagerReq\":{\"UserName\":null,\"Page\":1,\"Size\":10,\"Total\":0,\"Data\":null}}', 'LogAction', '2023-08-21 22:29:42', 'LogAction', '2023-08-21 22:29:42', 0);
+INSERT INTO `sys_log` VALUES ('16461663130698752', 2, '/User/listPager POST', 'Table \'single.user_follow\' doesn\'t exist', '2023-08-21 22:29:42', '1', '0.0.0.1', 'User', 'ListPager', 'pagerReq,Jt.SingleService.Data.GetPagerListReq;', 'LogAction', '2023-08-21 22:29:42', 'LogAction', '2023-08-21 22:29:42', 0);
+INSERT INTO `sys_log` VALUES ('16461665273447424', 1, '列表', '/User/listPager POST', '2023-08-21 22:31:53', '1', '0.0.0.1', 'User', 'ListPager', '{\"pagerReq\":{\"UserName\":null,\"Page\":1,\"Size\":10,\"Total\":0,\"Data\":null}}', 'LogAction', '2023-08-21 22:31:53', 'LogAction', '2023-08-21 22:31:53', 0);
+INSERT INTO `sys_log` VALUES ('16461665776190464', 1, '列表', '/User/listPager POST', '2023-08-21 22:32:23', '1', '0.0.0.1', 'User', 'ListPager', '{\"pagerReq\":{\"UserName\":null,\"Page\":1,\"Size\":10,\"Total\":0,\"Data\":null}}', 'LogAction', '2023-08-21 22:32:23', 'LogAction', '2023-08-21 22:32:23', 0);
+INSERT INTO `sys_log` VALUES ('16461666867397632', 1, '列表', '/User/listPager POST', '2023-08-21 22:33:30', '1', '0.0.0.1', 'User', 'ListPager', '{\"pagerReq\":{\"UserName\":null,\"Page\":1,\"Size\":10,\"Total\":0,\"Data\":null}}', 'LogAction', '2023-08-21 22:33:30', 'LogAction', '2023-08-21 22:33:30', 0);
+INSERT INTO `sys_log` VALUES ('16461666975613952', 1, '列表', '/Role/listPager POST', '2023-08-21 22:33:37', '1', '0.0.0.1', 'Role', 'ListPager', '{\"pagerReq\":{\"Page\":1,\"Size\":10,\"Total\":0,\"Data\":null}}', 'LogAction', '2023-08-21 22:33:37', 'LogAction', '2023-08-21 22:33:37', 0);
+INSERT INTO `sys_log` VALUES ('16461667119498240', 1, '列表', '/SysLog/listPager POST', '2023-08-21 22:33:45', '1', '0.0.0.1', 'SysLog', 'ListPager', '{\"req\":{\"Type\":1,\"Page\":1,\"Size\":10,\"Total\":0,\"Data\":null}}', 'LogAction', '2023-08-21 22:33:45', 'LogAction', '2023-08-21 22:33:45', 0);
+INSERT INTO `sys_log` VALUES ('16461667142829056', 1, '列表', '/SysLog/listPager POST', '2023-08-21 22:33:47', '1', '0.0.0.1', 'SysLog', 'ListPager', '{\"req\":{\"Type\":2,\"Page\":1,\"Size\":10,\"Total\":85,\"Data\":null}}', 'LogAction', '2023-08-21 22:33:47', 'LogAction', '2023-08-21 22:33:47', 0);
+INSERT INTO `sys_log` VALUES ('16461667497493504', 1, '列表', '/SysLog/listPager POST', '2023-08-21 22:34:08', '1', '0.0.0.1', 'SysLog', 'ListPager', '{\"req\":{\"Type\":1,\"Page\":1,\"Size\":10,\"Total\":2,\"Data\":null}}', 'LogAction', '2023-08-21 22:34:08', 'LogAction', '2023-08-21 22:34:08', 0);
+INSERT INTO `sys_log` VALUES ('16461667565159424', 1, '列表', '/CodeDb/listPager POST', '2023-08-21 22:34:12', '1', '0.0.0.1', 'CodeDb', 'ListPager', '{\"pagerReq\":{\"Page\":1,\"Size\":10,\"Total\":0,\"Data\":null}}', 'LogAction', '2023-08-21 22:34:12', 'LogAction', '2023-08-21 22:34:12', 0);
+INSERT INTO `sys_log` VALUES ('16461667649029120', 1, '修改', '/CodeDb/Update POST', '2023-08-21 22:34:18', '1', '0.0.0.1', 'CodeDb', 'Update', '{\"entity\":{\"Name\":\"cms\",\"Type\":\"MySql\",\"ConStr\":\"Server=192.168.110.128;Database=cms;Uid=root;Pwd=mysqlpwd;\",\"UserId\":\"1\",\"Id\":\"16459857586439168\",\"Creater\":\"1\",\"CreateTime\":\"2023-08-20T15:53:01\",\"Updater\":\"1\",\"UpTime\":\"2023-08-20T15:54:20\",\"IsDel\":0}}', 'LogAction', '2023-08-21 22:34:18', 'LogAction', '2023-08-21 22:34:18', 0);
+INSERT INTO `sys_log` VALUES ('16461667649831936', 1, '列表', '/CodeDb/listPager POST', '2023-08-21 22:34:18', '1', '0.0.0.1', 'CodeDb', 'ListPager', '{\"pagerReq\":{\"Page\":1,\"Size\":10,\"Total\":1,\"Data\":null}}', 'LogAction', '2023-08-21 22:34:18', 'LogAction', '2023-08-21 22:34:18', 0);
+INSERT INTO `sys_log` VALUES ('16461667693888512', 1, '列表', '/CodeTemp/listPager POST', '2023-08-21 22:34:20', '1', '0.0.0.1', 'CodeTemp', 'ListPager', '{\"pagerReq\":{\"Page\":1,\"Size\":10,\"Total\":0,\"Data\":null}}', 'LogAction', '2023-08-21 22:34:20', 'LogAction', '2023-08-21 22:34:20', 0);
+INSERT INTO `sys_log` VALUES ('16461667726672896', 1, '列表', '/CodeGenScheme/listPager POST', '2023-08-21 22:34:22', '1', '0.0.0.1', 'CodeGenScheme', 'ListPager', '{\"pagerReq\":{\"Page\":1,\"Size\":10,\"Total\":0,\"Data\":null}}', 'LogAction', '2023-08-21 22:34:22', 'LogAction', '2023-08-21 22:34:22', 0);
+INSERT INTO `sys_log` VALUES ('16461667776103424', 1, '连接', '/CodeGenerator/SetDb POST', '2023-08-21 22:34:25', '1', '0.0.0.1', 'CodeGenerator', 'SetDb', '{\"dbType\":\"MySql\",\"connectString\":\"Server=192.168.110.128;Database=cms;Uid=root;Pwd=mysqlpwd;\"}', 'LogAction', '2023-08-21 22:34:25', 'LogAction', '2023-08-21 22:34:25', 0);
+INSERT INTO `sys_log` VALUES ('16461667884581888', 1, '生成', '/CodeGenerator/CodeGenerator POST', '2023-08-21 22:34:32', '1', '0.0.0.1', 'CodeGenerator', 'CodeGenerator', '{\"codeTempParams\":{\"CodeSchemeId\":\"16235207007994880\",\"TableName\":\"action\",\"ClassName\":\"Action\",\"DbFieldInfos\":[{\"FieldName\":\"id\",\"FieldModelName\":\"Id\",\"FieldModelNameCamel\":\"id\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"id\",\"DefaultValue\":null},{\"FieldName\":\"controller\",\"FieldModelName\":\"Controller\",\"FieldModelNameCamel\":\"controller\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"控制器\",\"DefaultValue\":\"\"},{\"FieldName\":\"name\",\"FieldModelName\":\"Name\",\"FieldModelNameCamel\":\"name\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"action\",\"DefaultValue\":\"\"},{\"FieldName\":\"text\",\"FieldModelName\":\"Text\",\"FieldModelNameCamel\":\"text\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"文本\",\"DefaultValue\":\"\"},{\"FieldName\":\"creater\",\"FieldModelName\":\"Creater\",\"FieldModelNameCamel\":\"creater\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"添加人\",\"DefaultValue\":\"\"},{\"FieldName\":\"create_time\",\"FieldModelName\":\"CreateTime\",\"FieldModelNameCamel\":\"createTime\",\"FieldDbType\":\"datetime\",\"FieldModelType\":\"DateTime\",\"FieldLength\":0,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"添加时间\",\"DefaultValue\":\"CURRENT_TIMESTAMP\"},{\"FieldName\":\"updater\",\"FieldModelName\":\"Updater\",\"FieldModelNameCamel\":\"updater\",\"FieldDbType\":\"varchar\",\"FieldModelType\":\"string\",\"FieldLength\":50,\"NumberLength\":0,\"DecimalPoint\":0,\"IsNotNull\":\"NO\",\"IsIncrement\":0,\"IsPrimaryKey\":0,\"FieldDes\":\"最后修改人\",\"DefaultValue', 'LogAction', '2023-08-21 22:34:32', 'LogAction', '2023-08-21 22:34:32', 0);
+INSERT INTO `sys_log` VALUES ('16461680543777792', 1, '列表', '/SysLog/listPager POST', '2023-08-21 22:47:25', '1', '0.0.0.1', 'SysLog', 'ListPager', '{\"req\":{\"Type\":1,\"Page\":1,\"Size\":10,\"Total\":0,\"Data\":null}}', 'LogAction', '2023-08-21 22:47:25', 'LogAction', '2023-08-21 22:47:25', 0);
 
 -- ----------------------------
 -- Table structure for user
