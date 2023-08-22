@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Joont",
+    "classifications": [ "Web", "WebAPI" ],
+    "identity": "Jt.SingleService.Template",
+    "name": "Jt SingleService Web API",
+    "description": "更容易去创建管理系统",
+    "shortName": "jt-single",
+    "sourceName": "Jt.SingleService",
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    }
+}
