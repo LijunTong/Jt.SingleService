@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageVersion>1.0</PackageVersion>
+    <PackageId>Jt.SingleService.Template</PackageId>
+    <Title>Jt SingleService Web API</Title>
+    <Authors>Joont</Authors>
+    <Description>更容易去创建管理系统</Description>
+    <PackageTags>Web;WebAPI</PackageTags>
+    <TargetFramework>net6.0</TargetFramework>
+
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="src\**\*" Exclude="src\**\bin\**;src\**\obj\**;src\*.sln;src\.vs" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+</Project>
