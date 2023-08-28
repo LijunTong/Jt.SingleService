@@ -21,4 +21,4 @@ RUN dotnet publish "Jt.SingleService.csproj" -c Release -o /app/publish /p:UseAp
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Jt.SingleService.dll", "--urls", "http://*:10001"]
+ENTRYPOINT ["dotnet", "Jt.SingleService.dll", "--urls", "http://*:10000"]
