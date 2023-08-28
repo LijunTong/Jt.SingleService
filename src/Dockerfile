@@ -2,7 +2,7 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
-EXPOSE 10001
+EXPOSE 10000
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
@@ -22,4 +22,4 @@ RUN dotnet publish "Jt.SingleService.csproj" -c Release -o /app/publish /p:UseAp
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Jt.SingleService.dll", "--urls", "http://*:10001"]
+ENTRYPOINT ["dotnet", "Jt.SingleService.dll", "--urls", "http://*:10000"]
